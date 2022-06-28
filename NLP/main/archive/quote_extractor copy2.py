@@ -82,7 +82,7 @@ def find_sent_in_double_quotes(doc_sents, i):
     """ When detecting a sentence which is the candidate for start of a floating quote we use this function to
         look into next sentences to see if this floating quote candidate consists of more than one sentence.
     """
-    MAX_SENTS_TO_PROCESS = 5
+    MAX_SENTS_TO_PROCESS = 50#5
     sent = doc_sents[i]
     sent_string = str(sent)
     sent_string = sent_string.replace(" ", "")
@@ -449,7 +449,8 @@ def get_quote_type(doc, quote, verb, speaker, subtree_span):
     # Sort the Q,C,S,V letters based on the placement of quota mark, content, speaker and verb
     keydict = dict(zip(letters, indices))
     letters.sort(key=keydict.get)
-    return " ".join(letters).replace('q', 'Q')
+    return "".join(letters).replace('q', 'Q')
+
 
 def parse_input_files_only():
     """This method is run only if the user specifies the --file-path argument.

@@ -17,9 +17,9 @@ app_logger = utils.create_logger('quote_extractor', log_dir='logs', logger_level
 
 
 # Read quote verb list from file and store as a set for fast lookup
-with open(config['NLP']['QUOTE_VERBS'], 'r') as f:  
+with open(config['NLP']['QUOTE_VERBS'], 'r') as f:
     QUOTE_VERBS = set([line.strip() for line in f])
-    
+
 
 def get_rawtext_files(RAWTEXT_DIR):
     "Get list of raw text files from which to extract quotes"
@@ -163,27 +163,25 @@ def is_qcqsv_or_qcqvs_csv(sent, quote_list):
     return False, None
 
 
-def extract_quotes(doc_id, doc, write_tree=False, tree_dir=None):
+def extract_quotes(doc_id, doc, write_tree=False):
     """ Steps to extract quotes in a document:
         1. Extract syntactic quotes
         2. Extract floating quotes
         3. Extract heuristic quotes (using custom rules)
     """
-    syntactic_quotes = extract_syntactic_quotes(doc_id, doc, write_tree, tree_dir)
+    syntactic_quotes = extract_syntactic_quotes(doc_id, doc, write_tree)
     floating_quotes = extract_floating_quotes(doc, syntactic_quotes)
     heuristic_quotes = extract_heuristic_quotes(doc)
-    all_quotes = heuristic_quotes + syntactic_quotes + floating_quotes
+    all_quotes = syntactic_quotes + floating_quotes + heuristic_quotes
     final_quotes = find_global_duplicates(all_quotes)
     return final_quotes
 
 
-def extract_syntactic_quotes(doc_id, doc, write_tree=False, tree_dir=None):
+def extract_syntactic_quotes(doc_id, doc, write_tree=False):
     """ Extract syntactic quotes. """
 
     quote_list = []
     if write_tree:
-        #OUTPUT_DIRECTORY = './test/'
-        OUTPUT_DIRECTORY = tree_dir
         tree_writer = open(os.path.join(OUTPUT_DIRECTORY, doc_id + '_quoteTree.txt'), 'w')
     for word in doc:
         if word.dep_ in ('ccomp'):
@@ -362,11 +360,7 @@ def find_global_duplicates(quote_list):
             ref_quote_range = range(ref_start, ref_end)
             if len(set(quote_range).intersection(ref_quote_range)) > 0:
                 not_duplicate = False
-                # adding if then statement to remove duplicate quotes with no speaker
-                if quote_list[quote_idx]['speaker']=='':
-                    remove_quotes.append(quote_idx)
-                else:
-                    remove_quotes.append(ref_quote_idx)
+                remove_quotes.append(quote_idx)
                 break
         if not_duplicate:
             new_quote_span_list.append([start, end])
@@ -449,7 +443,8 @@ def get_quote_type(doc, quote, verb, speaker, subtree_span):
     # Sort the Q,C,S,V letters based on the placement of quota mark, content, speaker and verb
     keydict = dict(zip(letters, indices))
     letters.sort(key=keydict.get)
-    return " ".join(letters).replace('q', 'Q')
+    return "".join(letters).replace('q', 'Q')
+
 
 def parse_input_files_only():
     """This method is run only if the user specifies the --file-path argument.

@@ -1,0 +1,50 @@
+---------------------------------------------------------
+The President has promoted sedition and incited violence
+---------------------------------------------------------
+                                                                                           said                                                                                                     
+    ________________________________________________________________________________________|__________________________________________________________________________________________________      
+   |        |        |                                |                                                                  Greenblatt                                                            |    
+   |        |        |                                |                                      ________________________________|_________________________                                        |     
+   |        |        |                                |                                     |            |        |                                 officer                                    |    
+   |        |        |                                |                                     |            |        |           _________________________|____________                           |     
+   |        |        |                                |                                     |            |        |          |             |                        of                         |    
+   |        |        |                                |                                     |            |        |          |             |                        |                          |     
+   |        |        |                             promoted                                 |            |        |          |             |                      League                       in   
+   |        |        |         _______________________|_____________________                |            |        |          |             |            ____________|______________            |     
+   |        |        |        |           |           |     President    incited            |            |        |          |             |           |            |              -       statement
+   |        |        |        |           |           |         |           |               |            |        |          |             |           |            |              |           |     
+,[punct] "[punct] .[punct] has[aux] sedition[dobj] and[cc]   The[det] violence[dobj] Jonathan[compoun ,[punct] ,[punct] chief[amod] executive[amod] the[det] Defamation[compo Anti[subtok]   a[det] 
+                                                                                            d]                                                                     und]                             
+
+-------------------------------------------------------
+there would be an "orderly transition on January 20th"
+-------------------------------------------------------
+                                                                                 said                                                                                                    
+    ______________________________________________________________________________|______________________________________________________________________________                         
+   |          |          |       |         |            |                                           be                                                      acknowledged                 
+   |          |          |       |         |            |               ____________________________|___________                                       __________|________                
+   |          |          |       |         |            |              |          |                         transition                              defeat                |              
+   |          |          |       |         |            |              |          |          ___________________|________________________             |                   |               
+   |          |          |       |         In           |              |          |         |       |           |          |             on           in                 for             
+   |          |          |       |         |            |              |          |         |       |           |          |             |            |                   |               
+   |          |          |       |     statement     morning           |          |         |       |           |          |            20th       election              time            
+   |          |          |       |         |            |              |          |         |       |           |          |             |            |           ________|________       
+,[punct] Trump[nsubj] and[cc] .[punct]   a[det]  Thursday[compoun there[expl] would[aux] an[det] "[punct] orderly[amod] "[punct] January[compound] the[det]   the[det]        first[amod]
+                                                        d]                                                                                                                               
+
+----
+and
+----
+                                                                                 said                                                                                                    
+    ______________________________________________________________________________|______________________________________________________________________________                         
+   |          |          |       |         |            |                                           be                                                      acknowledged                 
+   |          |          |       |         |            |               ____________________________|___________                                       __________|________                
+   |          |          |       |         |            |              |          |                         transition                              defeat                |              
+   |          |          |       |         |            |              |          |          ___________________|________________________             |                   |               
+   |          |          |       |         In           |              |          |         |       |           |          |             on           in                 for             
+   |          |          |       |         |            |              |          |         |       |           |          |             |            |                   |               
+   |          |          |       |     statement     morning           |          |         |       |           |          |            20th       election              time            
+   |          |          |       |         |            |              |          |         |       |           |          |             |            |           ________|________       
+,[punct] Trump[nsubj] and[cc] .[punct]   a[det]  Thursday[compoun there[expl] would[aux] an[det] "[punct] orderly[amod] "[punct] January[compound] the[det]   the[det]        first[amod]
+                                                        d]                                                                                                                               
+
