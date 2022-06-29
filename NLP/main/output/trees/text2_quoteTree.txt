@@ -1,50 +1,80 @@
----------------------------------------------------------
-The President has promoted sedition and incited violence
----------------------------------------------------------
-                                                                                           said                                                                                                     
-    ________________________________________________________________________________________|__________________________________________________________________________________________________      
-   |        |        |                                |                                                                  Greenblatt                                                            |    
-   |        |        |                                |                                      ________________________________|_________________________                                        |     
-   |        |        |                                |                                     |            |        |                                 officer                                    |    
-   |        |        |                                |                                     |            |        |           _________________________|____________                           |     
-   |        |        |                                |                                     |            |        |          |             |                        of                         |    
-   |        |        |                                |                                     |            |        |          |             |                        |                          |     
-   |        |        |                             promoted                                 |            |        |          |             |                      League                       in   
-   |        |        |         _______________________|_____________________                |            |        |          |             |            ____________|______________            |     
-   |        |        |        |           |           |     President    incited            |            |        |          |             |           |            |              -       statement
-   |        |        |        |           |           |         |           |               |            |        |          |             |           |            |              |           |     
-,[punct] "[punct] .[punct] has[aux] sedition[dobj] and[cc]   The[det] violence[dobj] Jonathan[compoun ,[punct] ,[punct] chief[amod] executive[amod] the[det] Defamation[compo Anti[subtok]   a[det] 
-                                                                                            d]                                                                     und]                             
+------------------------------------------------------------
+Canadians 'deeply disturbed' by violence in Washington D.C.
+------------------------------------------------------------
+                                                                                       says                                                                                                         
+       _________________________________________________________________________________|_________________________________                                                                           
+      |           |                        |                                                                          harnessed                                                                     
+      |           |                        |                                   ___________________________________________|___________________________________________________                       
+      |           |                        |                                  |         |          |                      |                                                   as                    
+      |           |                        |                                  |         |          |                      |                                                   |                      
+      |           |                        |                                  |         |          |                      |                                                  tool                   
+      |           |                        |                                  |         |          |                      |                                          _________|_____________         
+      |           |                    disturbed                              |         |          |                      |                                         |         |            for      
+      |           |            ____________|______________________            |         |          |                      |                                         |         |             |        
+      |           |           |            |         |            by          |         |          |                      |                                         |         |         spreading   
+      |           |           |            |         |            |           |         |          |                      |                                         |         |             |        
+      |           |           |            |         |         violence       |         |          |                      |                                         |         |       misinformation
+      |           |           |            |         |            |           |         |          |                      |                                         |         |             |        
+      |           |           |            |         |            in          |         |          |                    media                                       |         |           about     
+      |           |           |            |         |            |           |         |          |           ___________|_________________________                |         |             |        
+      |           |           |            |     Canadians       D.C.         |         |          |          |           |                      Twitter            |         |          election   
+      |           |           |            |         |            |           |         |          |          |           |             ____________|_______        |         |             |        
+Trudeau[nsubj] .[punct] deeply[advmod]  '[punct]  '[case]  Washington[compo        Trump[nsubj] has[aux] social[amod]  —[punct] especially[advmo         —[punct] a[det] potent[amod]    the[det]   
+                                                                 und]        [dep]                                                     d]                                                           
 
--------------------------------------------------------
-there would be an "orderly transition on January 20th"
--------------------------------------------------------
-                                                                                 said                                                                                                    
-    ______________________________________________________________________________|______________________________________________________________________________                         
-   |          |          |       |         |            |                                           be                                                      acknowledged                 
-   |          |          |       |         |            |               ____________________________|___________                                       __________|________                
-   |          |          |       |         |            |              |          |                         transition                              defeat                |              
-   |          |          |       |         |            |              |          |          ___________________|________________________             |                   |               
-   |          |          |       |         In           |              |          |         |       |           |          |             on           in                 for             
-   |          |          |       |         |            |              |          |         |       |           |          |             |            |                   |               
-   |          |          |       |     statement     morning           |          |         |       |           |          |            20th       election              time            
-   |          |          |       |         |            |              |          |         |       |           |          |             |            |           ________|________       
-,[punct] Trump[nsubj] and[cc] .[punct]   a[det]  Thursday[compoun there[expl] would[aux] an[det] "[punct] orderly[amod] "[punct] January[compound] the[det]   the[det]        first[amod]
-                                                        d]                                                                                                                               
+---------------------------------------------------------------------------------------------------------------------------
+  Trump has harnessed social media — especially Twitter — as a potent tool for spreading misinformation about the election
+---------------------------------------------------------------------------------------------------------------------------
+                                                                                       says                                                                                                         
+       _________________________________________________________________________________|_________________________________                                                                           
+      |           |                        |                                                                          harnessed                                                                     
+      |           |                        |                                   ___________________________________________|___________________________________________________                       
+      |           |                        |                                  |         |          |                      |                                                   as                    
+      |           |                        |                                  |         |          |                      |                                                   |                      
+      |           |                        |                                  |         |          |                      |                                                  tool                   
+      |           |                        |                                  |         |          |                      |                                          _________|_____________         
+      |           |                    disturbed                              |         |          |                      |                                         |         |            for      
+      |           |            ____________|______________________            |         |          |                      |                                         |         |             |        
+      |           |           |            |         |            by          |         |          |                      |                                         |         |         spreading   
+      |           |           |            |         |            |           |         |          |                      |                                         |         |             |        
+      |           |           |            |         |         violence       |         |          |                      |                                         |         |       misinformation
+      |           |           |            |         |            |           |         |          |                      |                                         |         |             |        
+      |           |           |            |         |            in          |         |          |                    media                                       |         |           about     
+      |           |           |            |         |            |           |         |          |           ___________|_________________________                |         |             |        
+      |           |           |            |     Canadians       D.C.         |         |          |          |           |                      Twitter            |         |          election   
+      |           |           |            |         |            |           |         |          |          |           |             ____________|_______        |         |             |        
+Trudeau[nsubj] .[punct] deeply[advmod]  '[punct]  '[case]  Washington[compo        Trump[nsubj] has[aux] social[amod]  —[punct] especially[advmo         —[punct] a[det] potent[amod]    the[det]   
+                                                                 und]        [dep]                                                     d]                                                           
 
-----
-and
-----
-                                                                                 said                                                                                                    
-    ______________________________________________________________________________|______________________________________________________________________________                         
-   |          |          |       |         |            |                                           be                                                      acknowledged                 
-   |          |          |       |         |            |               ____________________________|___________                                       __________|________                
-   |          |          |       |         |            |              |          |                         transition                              defeat                |              
-   |          |          |       |         |            |              |          |          ___________________|________________________             |                   |               
-   |          |          |       |         In           |              |          |         |       |           |          |             on           in                 for             
-   |          |          |       |         |            |              |          |         |       |           |          |             |            |                   |               
-   |          |          |       |     statement     morning           |          |         |       |           |          |            20th       election              time            
-   |          |          |       |         |            |              |          |         |       |           |          |             |            |           ________|________       
-,[punct] Trump[nsubj] and[cc] .[punct]   a[det]  Thursday[compoun there[expl] would[aux] an[det] "[punct] orderly[amod] "[punct] January[compound] the[det]   the[det]        first[amod]
-                                                        d]                                                                                                                               
+----------------------------------------------------------
+"The President has promoted sedition and incited violence
+----------------------------------------------------------
+                                                                                                   said                                                                                                                   
+    ________________________________________________________________________________________________|________________________________________________________________________________________________________________      
+   |        |        |                             |                                                                                           Greenblatt                                                            |    
+   |        |        |                             |                                                 ______________________________________________|___________                                                      |     
+   |        |        |                             |                                                |            |        |                                 officer                                                  |    
+   |        |        |                             |                                                |            |        |           _________________________|___________                                          |     
+   |        |        |                          promoted                                            |            |        |          |             |                       of                                        in   
+   |        |        |         ____________________|________________________________                |            |        |          |             |                       |                                         |     
+   |        |        |        |        |           |           |    President    incited            |            |        |          |             |                     League                                  statement
+   |        |        |        |        |           |           |        |           |               |            |        |          |             |            ___________|___________________________              |     
+,[punct] "[punct] .[punct] "[punct] has[aux] sedition[dobj] and[cc]  The[det] violence[dobj] Jonathan[compoun ,[punct] ,[punct] chief[amod] executive[amod] the[det] Anti[compound] -[compound] Defamation[compo   a[det] 
+                                                                                                    d]                                                                                                und]                
+
+------------------------------------------------------------------------------------------------------------------
+there would be an "orderly transition on January 20th" and acknowledged defeat in the election for the first time
+------------------------------------------------------------------------------------------------------------------
+                                                                                           said                                                                                                  
+    ________________________________________________________________________________________|___________________                                                                                  
+   |          |          |         |            |                                                               be                                                                               
+   |          |          |         |            |               ________________________________________________|_______________________________________________                                  
+   |          |          |         |            |              |          |         |                       transition                                     acknowledged                          
+   |          |          |         |            |              |          |         |        ___________________|_____________________              ____________|_________________                
+   |          |          |         In           |              |          |         |       |       |           |          |          on           |            in               for             
+   |          |          |         |            |              |          |         |       |       |           |          |          |            |            |                 |               
+   |          |          |     statement     morning           |          |         |       |       |           |          |       January         |         election            time            
+   |          |          |         |            |              |          |         |       |       |           |          |          |            |            |           ______|________       
+,[punct] Trump[nsubj] .[punct]   a[det]  Thursday[compoun there[expl] would[aux] and[cc] an[det] "[punct] orderly[amod] "[punct] 20th[nummod] defeat[dobj]   the[det]   the[det]      first[amod]
+                                                d]                                                                                                                                               
 
