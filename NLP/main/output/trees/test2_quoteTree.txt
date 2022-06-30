@@ -1,0 +1,53 @@
+--------------------------------------------------------------
+Canadians 'deeply disturbed' by violence in Washington D.C.  
+--------------------------------------------------------------
+                             says                                          
+       _______________________|____________                                 
+      |           |                    disturbed                           
+      |           |            ____________|______________________          
+      |           |           |            |         |            by       
+      |           |           |            |         |            |         
+      |           |           |            |         |         violence    
+      |           |           |            |         |            |         
+      |           |           |            |         |            in       
+      |           |           |            |         |            |         
+      |           |           |            |         |                     
+      |           |           |            |         |                     
+      |           |           |            |         |            |         
+      |           |           |            |     Canadians       D.C.      
+      |           |           |            |         |            |         
+Trudeau[nsubj] .[punct] deeply[advmod]  '[punct]  '[case]  Washington[compo
+                                                                 und]      
+
+----------------------------------------------------------
+"The President has promoted sedition and incited violence
+----------------------------------------------------------
+                                                                                                   said                                                                                                                   
+    ________________________________________________________________________________________________|________________________________________________________________________________________________________________      
+   |        |        |                             |                                                                                           Greenblatt                                                            |    
+   |        |        |                             |                                                 ______________________________________________|___________                                                      |     
+   |        |        |                             |                                                |            |        |                                 officer                                                  |    
+   |        |        |                             |                                                |            |        |           _________________________|___________                                          |     
+   |        |        |                          promoted                                            |            |        |          |             |                       of                                        in   
+   |        |        |         ____________________|________________________________                |            |        |          |             |                       |                                         |     
+   |        |        |        |        |           |           |    President    incited            |            |        |          |             |                     League                                  statement
+   |        |        |        |        |           |           |        |           |               |            |        |          |             |            ___________|___________________________              |     
+,[punct] "[punct] .[punct] "[punct] has[aux] sedition[dobj] and[cc]  The[det] violence[dobj] Jonathan[compoun ,[punct] ,[punct] chief[amod] executive[amod] the[det] Anti[compound] -[compound] Defamation[compo   a[det] 
+                                                                                                    d]                                                                                                und]                
+
+------------------------------------------------------------------------------------------------------------------
+there would be an "orderly transition on January 20th" and acknowledged defeat in the election for the first time
+------------------------------------------------------------------------------------------------------------------
+                                                                                           said                                                                                                  
+    ________________________________________________________________________________________|___________________                                                                                  
+   |          |          |         |            |                                                               be                                                                               
+   |          |          |         |            |               ________________________________________________|_______________________________________________                                  
+   |          |          |         |            |              |          |         |                       transition                                     acknowledged                          
+   |          |          |         |            |              |          |         |        ___________________|_____________________              ____________|_________________                
+   |          |          |         In           |              |          |         |       |       |           |          |          on           |            in               for             
+   |          |          |         |            |              |          |         |       |       |           |          |          |            |            |                 |               
+   |          |          |     statement     morning           |          |         |       |       |           |          |       January         |         election            time            
+   |          |          |         |            |              |          |         |       |       |           |          |          |            |            |           ______|________       
+,[punct] Trump[nsubj] .[punct]   a[det]  Thursday[compoun there[expl] would[aux] and[cc] an[det] "[punct] orderly[amod] "[punct] 20th[nummod] defeat[dobj]   the[det]   the[det]      first[amod]
+                                                d]                                                                                                                                               
+
