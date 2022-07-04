@@ -1,7 +1,5 @@
 __Status: V5.3__ (Code provided as-is; only sporadic updates expected).
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Sydney-Informatics-Hub/ATAP-GenderGapTracker/speaker_ner?labpath=%2FNLP%2Fmain%2Fquote_extractor_notebook.ipynb)
-
 # The Gender Gap Tracker
 
 This repo contains the code and framework used in our study on gender bias in the media. We present the [Gender Gap Tracker (GGT)](https://gendergaptracker.informedopinions.org/), an automated system that measures men and women’s voices on
