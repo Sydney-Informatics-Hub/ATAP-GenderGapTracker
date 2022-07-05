@@ -374,8 +374,11 @@ class QuotationTool():
         top_ent = dict(most_ent.most_common()[:top_n])
         
         # visualize the top entities
-        plt.figure(figsize=(10, 3))
-        plt.bar(top_ent.keys(), top_ent.values())
+        bar_colors = {'speaker_entities':'#2eb82e',
+                      'quote_entities':'#008ae6'}
+        plt.figure(figsize=(10, 2.5))
+        plt.bar(top_ent.keys(), top_ent.values(), color=bar_colors[which_ent])
+        plt.yticks(range(0, most_ent[max(most_ent, key=most_ent.get)]+1, 1))
         plt.title('Top {} {} in {}'.format(min(top_n,len(top_ent.keys())),which_ent,text_id))
         plt.show()
         
@@ -392,7 +395,7 @@ class QuotationTool():
         '''
         # widget for entering text_id
         enter_text = widgets.HTML(
-            value="<b>Enter the text_id of the text you wish to analyse:</b>",
+            value="<b>Enter text_id:</b>",
             placeholder='',
             description=''
             )
@@ -416,7 +419,7 @@ class QuotationTool():
             description='Speaker',
             disabled=False,
             indent=False,
-            #layout=Layout(margin='10px 0px 10px 2px')
+            layout=Layout(margin='0px 0px 0px 0px')
             )
         
         quote_box = widgets.Checkbox(
@@ -424,7 +427,7 @@ class QuotationTool():
             description='Quote',
             disabled=False,
             indent=False,
-            #layout=Layout(margin='10px 0px 10px 2px')
+            layout=Layout(margin='0px 0px 0px 0px')
             )
         
         ne_box = widgets.Checkbox(
@@ -432,12 +435,12 @@ class QuotationTool():
             description='Named Entities',
             disabled=False,
             indent=False,
-            #ayout=Layout(margin='10px 0px 10px 2px')
+            layout=Layout(margin='0px 0px 0px 0px')
             )
         
         # widget to show the preview
         preview_button = widgets.Button(description='Click to preview', 
-                                        layout=Layout(margin='5px 0px 0px 70px'),
+                                        layout=Layout(margin='10px 0px 0px 10px'),
                                         style=dict(font_style='italic',
                                                    font_weight='bold'))
         preview_out = widgets.Output()
@@ -469,7 +472,7 @@ class QuotationTool():
         
         # widget to save the preview
         save_button = widgets.Button(description='Save preview', 
-                                     layout=Layout(margin='5px 0px 0px 70px'),
+                                     layout=Layout(margin='10px 0px 0px 10px'),
                                      style=dict(font_style='italic',
                                                 font_weight='bold'))
         
@@ -499,7 +502,7 @@ class QuotationTool():
         
         # widget to show top 5 entities
         top_button = widgets.Button(description='Top 5 entities', 
-                                     layout=Layout(margin='5px 0px 0px 70px'),
+                                     layout=Layout(margin='10px 0px 0px 10px'),
                                      style=dict(font_style='italic',
                                                 font_weight='bold'))
         top_out = widgets.Output()
@@ -519,7 +522,10 @@ class QuotationTool():
         top_button.on_click(on_top_button_clicked)
         
         # displaying buttons and their outputs
-        box = widgets.VBox([enter_text, text, entity_options, speaker_box, quote_box, ne_box,
-                            preview_button, save_button, top_button, 
-                            top_out, preview_out])
-        return box
+        vbox1 = widgets.VBox([enter_text, text, entity_options, speaker_box, quote_box, ne_box,
+                              preview_button, save_button, top_button])
+        #vbox2 = widgets.VBox([preview_button, save_button, top_button])
+        
+        hbox = widgets.HBox([vbox1, top_out])
+        vbox = widgets.VBox([hbox, preview_out])
+        return vbox
