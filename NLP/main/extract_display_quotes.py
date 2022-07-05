@@ -437,7 +437,7 @@ class QuotationTool():
         
         # widget to show the preview
         preview_button = widgets.Button(description='Click to preview', 
-                                        layout=Layout(margin='5px 0px 10px 90px'),
+                                        layout=Layout(margin='5px 0px 0px 70px'),
                                         style=dict(font_style='italic',
                                                    font_weight='bold'))
         preview_out = widgets.Output()
@@ -445,7 +445,7 @@ class QuotationTool():
         def on_preview_button_clicked(_):
             with top_out:
                 clear_output()
-            with preview_out:
+            with preview_out:                                                                                   
                 # what happens when we click the preview_button
                 clear_output()
                 text_id = text.value
@@ -460,8 +460,7 @@ class QuotationTool():
                     print('Please select the entities to display!')
                 else:
                     try:
-                        self.show_quotes(text_df, quotes_df, text_id, show_what, inc_ent, save_to_html=True)
-                        print('Preview saved!')
+                        self.show_quotes(text_df, quotes_df, text_id, show_what, inc_ent, save_to_html=False)
                     except:
                         print('Please enter the correct text_id!')
         
@@ -470,7 +469,7 @@ class QuotationTool():
         
         # widget to save the preview
         save_button = widgets.Button(description='Save preview', 
-                                     layout=Layout(margin='5px 0px 10px 90px'),
+                                     layout=Layout(margin='5px 0px 0px 70px'),
                                      style=dict(font_style='italic',
                                                 font_weight='bold'))
         
@@ -500,7 +499,7 @@ class QuotationTool():
         
         # widget to show top 5 entities
         top_button = widgets.Button(description='Top 5 entities', 
-                                     layout=Layout(margin='5px 0px 10px 90px'),
+                                     layout=Layout(margin='5px 0px 0px 70px'),
                                      style=dict(font_style='italic',
                                                 font_weight='bold'))
         top_out = widgets.Output()
