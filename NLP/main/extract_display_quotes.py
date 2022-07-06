@@ -409,7 +409,7 @@ class QuotationTool():
         
         # widgets to select what to preview, i.e., speaker and/or quote and/or named entities
         entity_options = widgets.HTML(
-            value="<b>Select what entity to show:</b>",
+            value="<b>Select which entity to show:</b>",
             placeholder='',
             description='',
             )
