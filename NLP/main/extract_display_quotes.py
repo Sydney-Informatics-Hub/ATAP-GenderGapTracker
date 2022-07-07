@@ -440,20 +440,14 @@ class QuotationTool():
             )
         
         text_options = self.text_df.index.to_list() # get the list of text_id's
-        '''
         text = widgets.Dropdown(
             options=text_options,
+            rows=5,
             value=text_options[0],
             description='',
             disabled=False,
             layout = widgets.Layout(width='150px')
         )
-        '''
-        def select_text(value):
-            text.value=value.new
-        
-        auto_text = autoFill(text_options,callback=select_text)
-        text = widgets.HTML('')
         
         # widgets to select what to preview, i.e., speaker and/or quote and/or named entities
         entity_options = widgets.HTML(
@@ -586,7 +580,7 @@ class QuotationTool():
         top_button.on_click(on_top_button_clicked)
         
         # displaying buttons and their outputs
-        vbox1 = widgets.VBox([enter_text, auto_text, entity_options, speaker_box, quote_box, ne_box,
+        vbox1 = widgets.VBox([enter_text, text, entity_options, speaker_box, quote_box, ne_box,
                               preview_button, save_button, top_button])
         #vbox2 = widgets.VBox([preview_button, save_button, top_button])
         
