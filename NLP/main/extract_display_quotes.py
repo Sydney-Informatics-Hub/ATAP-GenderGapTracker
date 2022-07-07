@@ -22,6 +22,8 @@ import codecs
 import logging
 import traceback
 from collections import Counter
+from datetime import datetime
+from uuid import uuid4
 
 # matplotlib: visualization tool
 from matplotlib import pyplot as plt
@@ -91,10 +93,10 @@ class QuotationTool():
         
         # widget to upload .xlsx file
         uploader_xls = widgets.FileUpload(
-            description='Click here to upload an excel file', 
-            accept='.xlsx', # accepted file extension
+            description='Click here to upload .xlsx, .xls, or .csv file', 
+            accept='.xlsx, .xls, .csv', # accepted file extension
             multiple=False,  # to accept one Excel file only
-            layout = widgets.Layout(width='280px')
+            layout = widgets.Layout(width='320px')
             )
         
         # tab widget to select which file types to upload
@@ -155,30 +157,38 @@ class QuotationTool():
         '''
         # create an empty list for a placeholder to store all the texts
         all_files = []
-        doc_ids = []
-        n=0
+        text_names = []
+        text_ids = []
         
         # search for text files (.txt) inside the folder and extract all the texts
         for input_file in txt_upload.value.keys():
             text_dict = {}; n=0
             
-            # use the first ten characters of the text file name as the doc_id
-            doc_id = input_file[:-4].lower()[:20]
-            if doc_id in doc_ids:
-                while '{}-{}'.format(doc_id,n) in doc_ids:
+            # generate dated unique identifier for text_id
+            text_id = datetime.now().strftime('%Y-%m-%d-') + str(uuid4())[:10]
+            while text_id in text_ids:
+                text_id = datetime.now().strftime('%Y-%m-%d-') + str(uuid4())[:10]
+            else:
+                text_ids.append(text_id)
+            
+            # retain the first ten characters of the text file name as identifier
+            text_name = input_file[:-4].lower()[:20]
+            if text_name in text_names:
+                while '{}-{}'.format(text_name,n) in text_names:
                     n+=1
                 else:
-                    doc_id = '{}-{}'.format(doc_id,n)
-                    doc_ids.append(doc_id)
+                    text_name = '{}-{}'.format(text_name,n)
+                    text_names.append(text_name)
             else:
-                doc_ids.append(doc_id)
+                text_names.append(text_name)
 
             try:
                 # read the text file
                 doc_lines = codecs.decode(txt_upload.value[input_file]['content'], encoding='utf-8')
                 
                 # store them inside a dictionary
-                text_dict['text_id'] = doc_id
+                text_dict['text_id'] = text_id
+                text_dict['text_name'] = text_name
                 text_dict['text'] = doc_lines
                 all_files.append(text_dict)
                     
@@ -202,10 +212,27 @@ class QuotationTool():
         Args:
             xls_upload: the uploaded .xlsx file from upload_files()
         '''
+        text_ids = []
+        
         # read the excel file containing the list of texts and convert them into a pandas dataframe
-        self.text_df = pd.read_excel(io.BytesIO(xls_upload.data[0]))
-        self.text_df['spacy_text'] = self.text_df['text'].apply(lambda text: self.nlp_preprocess(text))
+        try:
+            self.text_df = pd.read_excel(io.BytesIO(xls_upload.data[0]))
+        except:
+            self.text_df = pd.read_csv(io.BytesIO(xls_upload.data[0]))
+        
+        # generate dated unique identifier for text_id
+        for row in self.text_df.itertuples():
+            
+            text_id = datetime.now().strftime('%Y-%m-%d-') + str(uuid4())[:10]
+            while text_id in text_ids:
+                text_id = datetime.now().strftime('%Y-%m-%d-') + str(uuid4())[:10]
+            else:
+                text_ids.append(text_id)
+        self.text_df['text_id'] = text_ids
         self.text_df.set_index('text_id', inplace=True)
+        
+        # process text using spaCy
+        self.text_df['spacy_text'] = self.text_df['text'].apply(lambda text: self.nlp_preprocess(text))
         
         return self.text_df
     
@@ -246,12 +273,13 @@ class QuotationTool():
         
         # go through all the texts and start extracting quotes
         for row in self.text_df.itertuples():
-            doc_id = row.Index
+            text_id = row.Index
+            text_name = row.text_name
             doc = row.spacy_text
             
             try:        
                 # extract the quotes
-                quotes = extract_quotes(doc_id=doc_id, doc=doc, 
+                quotes = extract_quotes(doc_id=text_id, doc=doc, 
                                         write_tree=create_tree, 
                                         tree_dir=tree_dir)
                 
@@ -262,7 +290,8 @@ class QuotationTool():
         
                 # add text_id, quote_id and named entities to each quote
                 for n, quote in enumerate(quotes):
-                    quote['text_id'] = doc_id
+                    quote['text_id'] = text_id
+                    quote['text_name'] = text_name
                     quote['quote_id'] = str(n)
                     quote['speaker_entities'] = list(set(speak_ents[n]))
                     quote['quote_entities'] = list(set(quote_ents[n]))
@@ -285,7 +314,7 @@ class QuotationTool():
                 self.quotes_df[column] = self.quotes_df[column].apply(eval)
         
         # re-arrange the columns
-        new_index = ['text_id', 'quote_id', 'quote', 'quote_index', 'quote_entities', 
+        new_index = ['text_id', 'text_name', 'quote_id', 'quote', 'quote_index', 'quote_entities', 
                      'speaker', 'speaker_index', 'speaker_entities',
                      'verb', 'verb_index', 'quote_token_count', 'quote_type', 'is_floating_quote']
         self.quotes_df = self.quotes_df.reindex(columns=new_index)
@@ -452,7 +481,7 @@ class QuotationTool():
             description=''
             )
         
-        text_options = self.text_df.index.to_list() # get the list of text_id's
+        text_options = self.text_df.text_name.to_list() # get the list of text_id's
         text = widgets.Combobox(
             placeholder='Choose text to analyse...',
             options=text_options,
@@ -513,7 +542,8 @@ class QuotationTool():
             with preview_out:                                                                                   
                 # what happens when we click the preview_button
                 clear_output()
-                text_id = text.value
+                text_name = text.value
+                text_id = self.quotes_df[self.quotes_df['text_name']==text_name]['text_id'].to_list()[0]
                 show_what = []
                 if speaker_box.value:
                     show_what.append('SPEAKER')
@@ -542,22 +572,12 @@ class QuotationTool():
         
         def on_save_button_clicked(_):
             with save_out:
-                # create an output folder if not yet available
-                os.makedirs('output', exist_ok=True)
-                out_dir='./output/'
-                text_id = text.value
-                
-                # save the preview as an html file
-                file = open(out_dir+text_id+'.html', 'w')
-                file.write(self.html)
-                file.close()
-                clear_output()
-                print('Preview saved!')
                 try:
                     # create an output folder if not yet available
                     os.makedirs('output', exist_ok=True)
                     out_dir='./output/'
-                    text_id = text.value
+                    text_name = text.value
+                    text_id = self.quotes_df[self.quotes_df['text_name']==text_name]['text_id'].to_list()[0]
                     
                     # save the preview as an html file
                     file = open(out_dir+text_id+'.html', 'w')
@@ -582,7 +602,8 @@ class QuotationTool():
             with top_out:
                 # what happens when we click the top_button
                 clear_output()
-                text_id = text.value
+                text_name = text.value
+                text_id = self.quotes_df[self.quotes_df['text_name']==text_name]['text_id'].to_list()[0]
                 try:
                     self.top_entities(text_id, which_ent='speaker_entities',top_n=5)
                     self.top_entities(text_id, which_ent='quote_entities',top_n=5)
