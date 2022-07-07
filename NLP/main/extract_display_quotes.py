@@ -44,7 +44,6 @@ from ipywidgets import Layout
 from IPython.display import display, Markdown, clear_output
 
 # import the quote extractor tool
-# Source: https://github.com/sfu-discourse-lab/GenderGapTracker
 from quote_extractor import extract_quotes
 from config import config
 import utils
@@ -84,22 +83,27 @@ class QuotationTool():
         '''
         # widget to upload .txt files
         uploader_text = widgets.FileUpload(
+            description='Click here to upload .txt files',
             accept='.txt', # accepted file extension 
-            multiple=True  # True to accept multiple files
+            multiple=True,  # True to accept multiple files
+            layout = widgets.Layout(width='280px')
             )
         
         # widget to upload .xlsx file
         uploader_xls = widgets.FileUpload(
+            description='Click here to upload an excel file', 
             accept='.xlsx', # accepted file extension
-            multiple=False  # to accept one Excel file only
+            multiple=False,  # to accept one Excel file only
+            layout = widgets.Layout(width='280px')
             )
         
         # tab widget to select what file types to upload
         children = [uploader_text, uploader_xls]
-        tab = widgets.Tab()
+        tab = widgets.Tab(layout = widgets.Layout(width='450px'))
         tab.children = children
         tab.set_title(0, 'Upload text files')
         tab.set_title(1, 'Upload excel file')
+        
         
         # give notification when file is uploaded
         def _cb(change):
@@ -487,7 +491,7 @@ class QuotationTool():
             )
         
         # widget to show the preview
-        preview_button = widgets.Button(description='Click to preview', 
+        preview_button = widgets.Button(description='Preview', 
                                         layout=Layout(margin='10px 0px 0px 10px'),
                                         style=dict(font_style='italic',
                                                    font_weight='bold'))
@@ -526,7 +530,7 @@ class QuotationTool():
         preview_button.on_click(on_preview_button_clicked)
         
         # widget to save the preview
-        save_button = widgets.Button(description='Save preview', 
+        save_button = widgets.Button(description='Save Preview', 
                                      layout=Layout(margin='10px 0px 0px 10px'),
                                      style=dict(font_style='italic',
                                                 font_weight='bold'))
@@ -565,7 +569,7 @@ class QuotationTool():
         save_button.on_click(on_save_button_clicked)
         
         # widget to show top 5 entities
-        top_button = widgets.Button(description='Top 5 entities', 
+        top_button = widgets.Button(description='Top 5 Entities', 
                                      layout=Layout(margin='10px 0px 0px 10px'),
                                      style=dict(font_style='italic',
                                                 font_weight='bold'))
@@ -588,7 +592,6 @@ class QuotationTool():
         # displaying buttons and their outputs
         vbox1 = widgets.VBox([enter_text, text, entity_options, speaker_box, quote_box, ne_box,
                               preview_button, save_button, top_button])
-        #vbox2 = widgets.VBox([preview_button, save_button, top_button])
         
         hbox = widgets.HBox([vbox1, top_out])
         vbox = widgets.VBox([hbox, save_out, preview_out])
