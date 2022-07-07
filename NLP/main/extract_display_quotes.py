@@ -11,7 +11,6 @@ import os
 import io
 import sys
 import codecs
-import utils
 import logging
 import traceback
 from collections import Counter
@@ -33,13 +32,17 @@ from nltk.tokenize import sent_tokenize
 
 # ipywidgets: tools for interactive browser controls in Jupyter notebooks
 import ipywidgets as widgets
-from ipywidgets import Button, Layout
+#from ipywidgets import Button, Layout
+from ipywidgets import Layout
 from IPython.display import display, Markdown, clear_output
 
 # import the quote extractor tool
 # Source: https://github.com/sfu-discourse-lab/GenderGapTracker
-from quote_extractor import extract_quotes, get_rawtext_files
+from quote_extractor import extract_quotes
 from config import config
+import utils
+
+from autoFill import autoFill
 
 
 class QuotationTool():
@@ -60,6 +63,14 @@ class QuotationTool():
         print('Loading spaCy language model...')
         self.nlp = spacy.load('en_core_web_lg')
         print('Finished loading.')
+        
+        # initiate variables to hold texts and quotes in pandas dataframes
+        self.text_df = None
+        self.quotes_df = None
+        
+        # initiate other variables
+        self.html = None
+        self.current_text = None
         
     
     def upload_files(self, file_type):
@@ -125,14 +136,21 @@ class QuotationTool():
         '''
         # create an empty list for a placeholder to store all the texts
         all_files = []
+        doc_ids = []
+        n=0
         
         # search for text files (.txt) inside the folder and extract all the texts
         for input_file in txt_upload.value.keys():
             text_dict = {}
             
-            # use the text file name as the doc_id
-            doc_id = input_file.replace('.txt', '')
-            
+            # use the first ten characters of the text file name as the doc_id
+            doc_id = input_file[:-4].lower()[:10]
+            while doc_id in doc_ids:
+                n+=1
+                doc_id = '{}-{}'.format(doc_id,n)
+            else:
+                doc_ids.append(doc_id)
+
             try:
                 # read the text file
                 doc_lines = codecs.decode(txt_upload.value[input_file]['content'], encoding='utf-8')
@@ -148,11 +166,11 @@ class QuotationTool():
                 traceback.print_exc()
         
         # convert the extracted texts into a pandas dataframe for further processing
-        text_df = pd.DataFrame.from_dict(all_files)
-        text_df['spacy_text'] = text_df['text'].apply(lambda text: self.nlp_preprocess(text))
-        text_df.set_index('text_id', inplace=True)
+        self.text_df = pd.DataFrame.from_dict(all_files)
+        self.text_df['spacy_text'] = self.text_df['text'].apply(lambda text: self.nlp_preprocess(text))
+        self.text_df.set_index('text_id', inplace=True)
         
-        return text_df
+        return self.text_df
     
     
     def process_xls(self, xls_upload):
@@ -163,20 +181,33 @@ class QuotationTool():
             xls_upload: the uploaded .xlsx file from upload_files()
         '''
         # read the excel file containing the list of texts and convert them into a pandas dataframe
-        text_df = pd.read_excel(io.BytesIO(xls_upload.data[0]))
-        text_df['spacy_text'] = text_df['text'].apply(lambda text: self.nlp_preprocess(text))
-        text_df.set_index('text_id', inplace=True)
+        self.text_df = pd.read_excel(io.BytesIO(xls_upload.data[0]))
+        self.text_df['spacy_text'] = self.text_df['text'].apply(lambda text: self.nlp_preprocess(text))
+        self.text_df.set_index('text_id', inplace=True)
         
-        return text_df
+        return self.text_df
+    
+    
+    def extract_inc_ent(self, list_of_string, spacy_doc, inc_ent):
+        '''
+        Extract included named entities from a list of string
+
+        Args:
+            list_of_string: a list of string from which to extract the named entities
+            spacy_doc: spaCy's processed text for the above list of string
+            inc_ent: a list containing the named entities to be extracted from the text, 
+                     e.g., ['ORG','PERSON','GPE','NORP','FAC','LOC']
+            create_tree: option to create parse tree files for the quotes 
+        '''       
+        return [[(str(ent), ent.label_) for ent in spacy_doc.ents if (str(ent) in string) & (ent.label_ in inc_ent)] for string in list_of_string]
         
 
-    def get_quotes(self, text_df, inc_ent, create_tree=False):
+    def get_quotes(self, inc_ent, create_tree=False):
         '''
         Extract quotes and their meta-data (quote_id, quote_index, etc.) from the text
         and return as a pandas dataframe
 
         Args:
-            text_df: the pandas dataframe containing the list of texts
             inc_ent: a list containing the named entities to be extracted from the text, 
                      e.g., ['ORG','PERSON','GPE','NORP','FAC','LOC']
             create_tree: option to create parse tree files for the quotes 
@@ -193,7 +224,7 @@ class QuotationTool():
         all_quotes = []
         
         # go through all the texts and start extracting quotes
-        for row in text_df.itertuples():
+        for row in self.text_df.itertuples():
             doc_id = row.Index
             doc = row.spacy_text
             
@@ -204,9 +235,9 @@ class QuotationTool():
                                         tree_dir=tree_dir)
                 
                 # extract the included named entities
-                speaks, qts = [quote['speaker'] for quote in quotes], [quote['quote'] for quote in quotes]        
-                speak_ents = [[(str(ent), ent.label_) for ent in doc.ents if (str(ent) in speak) & (ent.label_ in inc_ent)] for speak in speaks]        
-                quote_ents = [[(str(ent), ent.label_) for ent in doc.ents if (str(ent) in qt) & (ent.label_ in inc_ent)] for qt in qts]
+                speaks, qts = [quote['speaker'] for quote in quotes], [quote['quote'] for quote in quotes]
+                speak_ents = self.extract_inc_ent(speaks, doc, inc_ent)
+                quote_ents = self.extract_inc_ent(qts, doc, inc_ent)
         
                 # add text_id, quote_id and named entities to each quote
                 for n, quote in enumerate(quotes):
@@ -224,35 +255,59 @@ class QuotationTool():
                 traceback.print_exception()
                 
         # convert the outcome into a pandas dataframe
-        quotes_df = pd.DataFrame.from_dict(all_quotes)
+        self.quotes_df = pd.DataFrame.from_dict(all_quotes)
         
         # convert the string format quote spans in the index columns to a tuple of integers
-        for column in quotes_df.columns:
+        for column in self.quotes_df.columns:
             if column.endswith('_index'):
-                quotes_df[column].replace('','(0,0)', inplace=True)
-                quotes_df[column] = quotes_df[column].apply(eval)
+                self.quotes_df[column].replace('','(0,0)', inplace=True)
+                self.quotes_df[column] = self.quotes_df[column].apply(eval)
         
         # re-arrange the columns
         new_index = ['text_id', 'quote_id', 'quote', 'quote_index', 'quote_entities', 
                      'speaker', 'speaker_index', 'speaker_entities',
                      'verb', 'verb_index', 'quote_token_count', 'quote_type', 'is_floating_quote']
-        quotes_df = quotes_df.reindex(columns=new_index)
+        self.quotes_df = self.quotes_df.reindex(columns=new_index)
                 
-        return quotes_df
+        return self.quotes_df
     
     
-    def show_quotes(self, text_df, quotes_df, text_id, show_what, inc_ent, save_to_html=False):
+    def show_entities(self, doc, selTokens, inc_ent):
+        '''
+        Add included named entities to displaCy code
+
+        Args:
+            ent_code_list: displaCy code containing included named entities
+            selTokens: options to display speakers, quotes or named entities
+            inc_ent: a list containing the named entities to be extracted from the text, 
+                     e.g., ['ORG','PERSON','GPE','NORP','FAC','LOC']
+        '''
+        # empty loist to hold entities code
+        ent_code_list = []
+        
+        # create span code for entities
+        for ent in doc.ents:
+            if (ent.start in selTokens) & (ent.label_ in inc_ent):
+                span_code = "Span(doc, {}, {}, '{}'),".format(ent.start, 
+                                                  ent.end, 
+                                                  ent.label_) 
+                ent_code_list.append(span_code)
+        
+        # combine codes for all entities
+        ent_code = ''.join(ent_code_list)
+        
+        return ent_code
+    
+    
+    def show_quotes(self, text_id, show_what, inc_ent):
         '''
         Display speakers, quotes and named entities inside the text using displaCy
 
         Args:
-            text_df: the pandas dataframe containing the list of texts
-            quotes_df: the pandas dataframe containing the quotes
             text_id: the text_id of the text you wish to display
             show_what: options to display speakers, quotes or named entities
             inc_ent: a list containing the named entities to be extracted from the text, 
                      e.g., ['ORG','PERSON','GPE','NORP','FAC','LOC']
-            save_to_html: option to save the display into an html file
         '''
         # formatting options
         TPL_SPAN = '''
@@ -288,15 +343,15 @@ class QuotationTool():
                    'top_offset_step':14}
         
         # get the spaCy text 
-        doc = text_df.loc[text_id, 'spacy_text']
+        doc = self.text_df.loc[text_id, 'spacy_text']
         
         # create a mapping dataframe between the character index and token index from the spacy text.
         loc2tok_df = pd.DataFrame([(t.idx, t.i) for t in doc], columns = ['loc', 'token'])
     
         # get the quotes and speakers indexes
         locs = {
-            'QUOTE': quotes_df[quotes_df['text_id']==text_id]['quote_index'].tolist(),
-            'SPEAKER': set(quotes_df[quotes_df['text_id']==text_id]['speaker_index'].tolist())
+            'QUOTE': self.quotes_df[self.quotes_df['text_id']==text_id]['quote_index'].tolist(),
+            'SPEAKER': set(self.quotes_df[self.quotes_df['text_id']==text_id]['speaker_index'].tolist())
         }
     
         # create the displaCy code to visualise quotes and speakers
@@ -310,22 +365,14 @@ class QuotationTool():
                     
                     # option to display named entities only
                     if show_what==['NAMED ENTITIES']:
-                        for ent in doc.ents:
-                            if (ent.start in selTokens) & (ent.label_ in inc_ent):
-                                span_code = "Span(doc, {}, {}, '{}'),".format(ent.start, 
-                                                                  ent.end, 
-                                                                  ent.label_) 
-                                my_code_list.insert(1,span_code)
+                        ent_code = self.show_entities(doc, selTokens, inc_ent)
+                        my_code_list.insert(1,ent_code)
                     
                     # option to display speaker and/or quotes and/or named entities
                     elif key in show_what:
                         if 'NAMED ENTITIES' in show_what:
-                            for ent in doc.ents:
-                                if (ent.start in selTokens) & (ent.label_ in inc_ent):
-                                    span_code = "Span(doc, {}, {}, '{}'),".format(ent.start, 
-                                                                      ent.end, 
-                                                                      ent.label_) 
-                                    my_code_list.insert(1,span_code)
+                            ent_code = self.show_entities(doc, selTokens, inc_ent)
+                            my_code_list.insert(1,ent_code)
                         
                         start_token, end_token = selTokens[0], selTokens[-1] 
                         span_code = "Span(doc, {}, {}, '{}'),".format(start_token, end_token+1, key) 
@@ -339,35 +386,21 @@ class QuotationTool():
         
         # display the preview in this notebook
         displacy.render(doc, style='span', options=options, jupyter=True)
-    
-        # option to save the preview as an html document
-        if save_to_html:
-            # create an output folder if not yet available
-            os.makedirs('output', exist_ok=True)
-            out_dir='./output/'
-            
-            # render the html preview
-            html = displacy.render(doc, style='span', options=options, jupyter=False, page=True)
-            
-            # save the preview as an html file
-            file = open(out_dir+text_id+'.html', 'w')
-            file.write(html)
-            file.close()
+        self.html = displacy.render(doc, style='span', options=options, jupyter=False, page=True)
         
         
-    def top_entities(self, quotes_df, text_id, which_ent='speaker_entities',top_n=5):
+    def top_entities(self, text_id, which_ent='speaker_entities',top_n=5):
         '''
         Display top n named entities inside the text using displaCy
 
         Args:
-            quotes_df: the pandas dataframe containing the quotes
             text_id: the text_id of the text you wish to display
             which_ent: option to display named entities in speakers ('speaker_entities') 
                        or quotes ('quote_entities')
             top_n: the number of entities to display
         '''
         # get the top entities
-        most_ent = quotes_df[quotes_df['text_id']==text_id][which_ent].tolist()
+        most_ent = self.quotes_df[self.quotes_df['text_id']==text_id][which_ent].tolist()
         most_ent = list(filter(None,most_ent))
         most_ent = [ent for most in most_ent for ent in most]
         most_ent = Counter([ent_name for ent_name, ent_label in most_ent])
@@ -383,29 +416,36 @@ class QuotationTool():
         plt.show()
         
 
-    def analyse_quotes(self, text_df, quotes_df, inc_ent):
+    def analyse_quotes(self, inc_ent):
         '''
         Interactive tool to display and analyse speakers, quotes and named entities inside the text
 
         Args:
-            text_df: the pandas dataframe containing the list of texts
-            quotes_df: the pandas dataframe containing the quotes
             inc_ent: a list containing the named entities to be extracted from the text, 
                      e.g., ['ORG','PERSON','GPE','NORP','FAC','LOC']
         '''
-        # widget for entering text_id
+        # widget for selecting text_id
         enter_text = widgets.HTML(
-            value="<b>Enter text_id:</b>",
+            value='<b>Select which text to preview:</b>',
             placeholder='',
             description=''
             )
         
-        text = widgets.Text(
-            value='',
+        text_options = self.text_df.index.to_list() # get the list of text_id's
+        '''
+        text = widgets.Dropdown(
+            options=text_options,
+            value=text_options[0],
             description='',
-            style=dict(font_style='italic', fontweight='bold'),
-            layout = widgets.Layout(width='100px')
-            )
+            disabled=False,
+            layout = widgets.Layout(width='150px')
+        )
+        '''
+        def select_text(value):
+            text.value=value.new
+        
+        auto_text = autoFill(text_options,callback=select_text)
+        text = widgets.HTML('')
         
         # widgets to select what to preview, i.e., speaker and/or quote and/or named entities
         entity_options = widgets.HTML(
@@ -447,7 +487,14 @@ class QuotationTool():
         
         def on_preview_button_clicked(_):
             with top_out:
+                # remove bar plot if previewing new text_id
+                if text.value!=self.current_text:
+                    clear_output()
+                    self.current_text = text.value
+            
+            with save_out:
                 clear_output()
+            
             with preview_out:                                                                                   
                 # what happens when we click the preview_button
                 clear_output()
@@ -463,12 +510,12 @@ class QuotationTool():
                     print('Please select the entities to display!')
                 else:
                     try:
-                        self.show_quotes(text_df, quotes_df, text_id, show_what, inc_ent, save_to_html=False)
+                        self.show_quotes(text_id, show_what, inc_ent)
                     except:
                         print('Please enter the correct text_id!')
         
         # link the preview_button with the function
-        show_what = preview_button.on_click(on_preview_button_clicked)
+        preview_button.on_click(on_preview_button_clicked)
         
         # widget to save the preview
         save_button = widgets.Button(description='Save preview', 
@@ -476,26 +523,35 @@ class QuotationTool():
                                      style=dict(font_style='italic',
                                                 font_weight='bold'))
         
+        save_out = widgets.Output()
+        
         def on_save_button_clicked(_):
-            with preview_out:
-                # what happens when we click the save_button
-                clear_output()
+            with save_out:
+                # create an output folder if not yet available
+                os.makedirs('output', exist_ok=True)
+                out_dir='./output/'
                 text_id = text.value
-                show_what = []
-                if speaker_box.value:
-                    show_what.append('SPEAKER')
-                if quote_box.value:
-                    show_what.append('QUOTE')
-                if ne_box.value:
-                    show_what.append('NAMED ENTITIES')
-                if show_what==[]:
-                    print('Please select the entities to display!')
-                else:
-                    try:
-                        self.show_quotes(text_df, quotes_df, text_id, show_what, inc_ent, save_to_html=True)
-                        print('Preview saved!')
-                    except:
-                        print('Please enter the correct text_id!')
+                
+                # save the preview as an html file
+                file = open(out_dir+text_id+'.html', 'w')
+                file.write(self.html)
+                file.close()
+                clear_output()
+                print('Preview saved!')
+                try:
+                    # create an output folder if not yet available
+                    os.makedirs('output', exist_ok=True)
+                    out_dir='./output/'
+                    text_id = text.value
+                    
+                    # save the preview as an html file
+                    file = open(out_dir+text_id+'.html', 'w')
+                    file.write(self.html)
+                    file.close()
+                    clear_output()
+                    print('Preview saved!')
+                except:
+                    print('You need to generate a preview before you can save it!')
         
         # link the save_button with the function
         save_button.on_click(on_save_button_clicked)
@@ -513,8 +569,8 @@ class QuotationTool():
                 clear_output()
                 text_id = text.value
                 try:
-                    self.top_entities(quotes_df, text_id, which_ent='speaker_entities',top_n=5)
-                    self.top_entities(quotes_df, text_id, which_ent='quote_entities',top_n=5)
+                    self.top_entities(text_id, which_ent='speaker_entities',top_n=5)
+                    self.top_entities(text_id, which_ent='quote_entities',top_n=5)
                 except:
                     print('Please ensure you have entered the correct text_id and select the entities to display!')
         
@@ -522,10 +578,11 @@ class QuotationTool():
         top_button.on_click(on_top_button_clicked)
         
         # displaying buttons and their outputs
-        vbox1 = widgets.VBox([enter_text, text, entity_options, speaker_box, quote_box, ne_box,
+        vbox1 = widgets.VBox([enter_text, auto_text, entity_options, speaker_box, quote_box, ne_box,
                               preview_button, save_button, top_button])
         #vbox2 = widgets.VBox([preview_button, save_button, top_button])
         
         hbox = widgets.HBox([vbox1, top_out])
-        vbox = widgets.VBox([hbox, preview_out])
+        vbox = widgets.VBox([hbox, save_out, preview_out])
+        
         return vbox
