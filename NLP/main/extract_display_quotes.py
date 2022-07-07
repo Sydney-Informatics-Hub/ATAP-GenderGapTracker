@@ -40,7 +40,6 @@ from nltk.tokenize import sent_tokenize
 
 # ipywidgets: tools for interactive browser controls in Jupyter notebooks
 import ipywidgets as widgets
-#from ipywidgets import Button, Layout
 from ipywidgets import Layout
 from IPython.display import display, Markdown, clear_output
 
@@ -49,8 +48,6 @@ from IPython.display import display, Markdown, clear_output
 from quote_extractor import extract_quotes
 from config import config
 import utils
-
-from autoFill import autoFill
 
 
 class QuotationTool():
