@@ -159,13 +159,16 @@ class QuotationTool():
         
         # search for text files (.txt) inside the folder and extract all the texts
         for input_file in txt_upload.value.keys():
-            text_dict = {}
+            text_dict = {}; n=0
             
             # use the first ten characters of the text file name as the doc_id
-            doc_id = input_file[:-4].lower()[:10]
-            while doc_id in doc_ids:
-                n+=1
-                doc_id = '{}-{}'.format(doc_id,n)
+            doc_id = input_file[:-4].lower()[:20]
+            if doc_id in doc_ids:
+                while '{}-{}'.format(doc_id,n) in doc_ids:
+                    n+=1
+                else:
+                    doc_id = '{}-{}'.format(doc_id,n)
+                    doc_ids.append(doc_id)
             else:
                 doc_ids.append(doc_id)
 
@@ -450,14 +453,24 @@ class QuotationTool():
             )
         
         text_options = self.text_df.index.to_list() # get the list of text_id's
+        text = widgets.Combobox(
+            # value='John',
+            placeholder='Choose text to analyse...',
+            options=text_options,
+            description='',
+            ensure_option=True,
+            disabled=False,
+            layout = widgets.Layout(width='180px')
+        )
+        '''
         text = widgets.Dropdown(
             options=text_options,
             rows=5,
             value=text_options[0],
             description='',
             disabled=False,
-            layout = widgets.Layout(width='150px')
-        )
+            layout = widgets.Layout(width='180px')
+        )'''
         
         # widgets to select what to preview, i.e., speaker and/or quote and/or named entities
         entity_options = widgets.HTML(
