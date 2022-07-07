@@ -78,40 +78,49 @@ class QuotationTool():
         self.current_text = None
         
     
-    def upload_files(self, file_type):
+    def upload_files(self):
         '''
         Upload text or excel files as input to the QuotationTool
-        
-        Args:
-            file_type: the file type being uploaded ('text' for uploading .txt files
-                                                     or 'excel' for uploading .xlsx file)
         '''
-        if file_type=='text':
-            print('Upload your .txt files here:')
-            # widget to upload .txt files
-            uploader = widgets.FileUpload(
-                accept='.txt', # accepted file extension 
-                multiple=True  # True to accept multiple files
-                )
-        elif file_type=='excel':
-            print('Upload your excel spreadsheet (.xlsx) here:')
-            # widget to upload .xlsx file
-            uploader = widgets.FileUpload(
-                accept='.xlsx', # accepted file extension
-                multiple=False  # to accept one Excel file only
-                )
-        else:
-            # warning if other type files are uploaded
-            print('You can only upload .txt or .xlsx files!')
+        # widget to upload .txt files
+        uploader_text = widgets.FileUpload(
+            accept='.txt', # accepted file extension 
+            multiple=True  # True to accept multiple files
+            )
+        
+        # widget to upload .xlsx file
+        uploader_xls = widgets.FileUpload(
+            accept='.xlsx', # accepted file extension
+            multiple=False  # to accept one Excel file only
+            )
+        
+        # tab widget to select what file types to upload
+        children = [uploader_text, uploader_xls]
+        tab = widgets.Tab()
+        tab.children = children
+        tab.set_title(0, 'Upload text files')
+        tab.set_title(1, 'Upload excel file')
         
         # give notification when file is uploaded
         def _cb(change):
             clear_output()
-            print('File uploaded!')
+            uploaded_success = widgets.HTML(
+            value='<b>File uploaded!</b>',
+            placeholder='',
+            description='',
+            layout=Layout(margin='0px 0px 0px 0px')
+            )
+            display(uploaded_success)
+            # process the uploaded file
+            if tab.children[0].value!={}:
+                self.process_txt(tab.children[0])
+            else:
+                self.process_xls(tab.children[1])
             
-        uploader.observe(_cb, names='data')
+        uploader_text.observe(_cb, names='data')
+        uploader_xls.observe(_cb, names='data')
         
-        return uploader
+        return tab
     
     
     def nlp_preprocess(self, text):
