@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on Mon Jul  4 14:55:46 2022
 
 @author: sjuf9909
-"""
+
+This code has been adapted (with permission) from the GenderGapTracker GitHub page 
+(https://github.com/sfu-discourse-lab/GenderGapTracker/tree/master/NLP/main)
+and modified to run on a Jupyter Notebook.
+
+The quotation tool’s accuracy rate is evaluated in the below article:
+The Gender Gap Tracker: Using Natural Language Processing to measure gender bias in media
+(https://doi.org/10.1371/journal.pone.0245533)
+'''
 
 # import required packages
 import os

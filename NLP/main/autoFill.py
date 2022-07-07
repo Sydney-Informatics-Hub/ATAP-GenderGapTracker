@@ -38,7 +38,7 @@ def autoFill(opts=[''], val='',txt='',placehold='Please type here...',callback=F
                     selDropBox.layout.visibility='visible'
                     selDropBox.layout.display='flex'
                     out.append('')
-                    drop.options=out
+                    drop.options=out[1:]
                 
     drop = Select(
                 options=opts,
