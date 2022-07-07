@@ -72,7 +72,7 @@ class QuotationTool():
         self.text_df = None
         self.quotes_df = None
         
-        # initiate other variables
+        # initiate other required variables
         self.html = None
         self.current_text = None
         
@@ -97,7 +97,7 @@ class QuotationTool():
             layout = widgets.Layout(width='280px')
             )
         
-        # tab widget to select what file types to upload
+        # tab widget to select which file types to upload
         children = [uploader_text, uploader_xls]
         tab = widgets.Tab(layout = widgets.Layout(width='450px'))
         tab.children = children
@@ -115,6 +115,7 @@ class QuotationTool():
             layout=Layout(margin='0px 0px 0px 0px')
             )
             display(uploaded_success)
+            
             # process the uploaded file
             if tab.children[0].value!={}:
                 self.process_txt(tab.children[0])
@@ -218,7 +219,6 @@ class QuotationTool():
             spacy_doc: spaCy's processed text for the above list of string
             inc_ent: a list containing the named entities to be extracted from the text, 
                      e.g., ['ORG','PERSON','GPE','NORP','FAC','LOC']
-            create_tree: option to create parse tree files for the quotes 
         '''       
         return [[(str(ent), ent.label_) for ent in spacy_doc.ents if (str(ent) in string) & (ent.label_ in inc_ent)] for string in list_of_string]
         
@@ -293,12 +293,12 @@ class QuotationTool():
         return self.quotes_df
     
     
-    def show_entities(self, doc, selTokens, inc_ent):
+    def show_entities(self, spacy_doc, selTokens, inc_ent):
         '''
         Add included named entities to displaCy code
 
         Args:
-            ent_code_list: displaCy code containing included named entities
+            spacy_doc: spaCy's processed text for the above list of string
             selTokens: options to display speakers, quotes or named entities
             inc_ent: a list containing the named entities to be extracted from the text, 
                      e.g., ['ORG','PERSON','GPE','NORP','FAC','LOC']
@@ -307,7 +307,7 @@ class QuotationTool():
         ent_code_list = []
         
         # create span code for entities
-        for ent in doc.ents:
+        for ent in spacy_doc.ents:
             if (ent.start in selTokens) & (ent.label_ in inc_ent):
                 span_code = "Span(doc, {}, {}, '{}'),".format(ent.start, 
                                                   ent.end, 
@@ -454,7 +454,6 @@ class QuotationTool():
         
         text_options = self.text_df.index.to_list() # get the list of text_id's
         text = widgets.Combobox(
-            # value='John',
             placeholder='Choose text to analyse...',
             options=text_options,
             description='',
@@ -462,15 +461,6 @@ class QuotationTool():
             disabled=False,
             layout = widgets.Layout(width='180px')
         )
-        '''
-        text = widgets.Dropdown(
-            options=text_options,
-            rows=5,
-            value=text_options[0],
-            description='',
-            disabled=False,
-            layout = widgets.Layout(width='180px')
-        )'''
         
         # widgets to select what to preview, i.e., speaker and/or quote and/or named entities
         entity_options = widgets.HTML(
