@@ -38,5 +38,3 @@ xlrd
 
 openpyxl
 ipywidgets
-matplotlib
-python -m spacy download en_core_web_lg
