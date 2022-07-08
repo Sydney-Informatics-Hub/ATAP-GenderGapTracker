@@ -76,10 +76,14 @@ class QuotationTool():
         # initiate variables to hold texts and quotes in pandas dataframes
         self.text_df = None
         self.quotes_df = None
+        self.name2id = {}
         
         # initiate other required variables
         self.html = None
         self.current_text = None
+
+        self.deduplication = True
+        self.inc_ent = ['ORG','PERSON','GPE','NORP','FAC','LOC']
 
         self.file_uploader = widgets.FileUpload(
             description='Upload your files (txt, csv or xlsx)',
@@ -114,7 +118,7 @@ class QuotationTool():
         return temp
 
 
-    def hash_gen(self, temp_df):
+    def id_gen(self, temp_df):
         # Create column text_id by md5 hash of the text in text_df
         temp_df['text_id'] = temp_df['text'].apply(lambda t: hashlib.md5(t.encode('utf-8')).hexdigest())
         return temp_df
@@ -136,7 +140,7 @@ class QuotationTool():
         return temp_df
 
 
-    def process_upload(self, deduplication=True):    
+    def process_upload(self):    
         '''
         Pre-process uploaded .txt files into pandas dataframe
 
@@ -155,13 +159,13 @@ class QuotationTool():
             all_data.extend(text_dic)
         uploaded_df = pd.DataFrame.from_dict(all_data)
 
-        uploaded_df = self.hash_gen(uploaded_df)
+        uploaded_df = self.id_gen(uploaded_df)
         uploaded_df = self.nlp_preprocess(uploaded_df)
         self.text_df = pd.concat([self.text_df, uploaded_df])
         # Deduplicate the text_df by text_id
-        if deduplication:
+        if self.deduplication:
             self.text_df.drop_duplicates(subset='text_id', keep='first', inplace=True)
-    
+        self.name2id = dict(zip(self.text_df['text_name'], self.text_df['text_id']))
     
     def extract_inc_ent(self, list_of_string, spacy_doc, inc_ent):
         '''
@@ -203,7 +207,7 @@ class QuotationTool():
         
         # go through all the texts and start extracting quotes
         for row in self.text_df.itertuples():
-            text_id = row.Index
+            text_id = row.text_id
             text_name = row.text_name
             doc = row.spacy_text
             
@@ -323,8 +327,9 @@ class QuotationTool():
                    'top_offset_step':14}
         
         # get the spaCy text 
-        doc = self.text_df.loc[text_id, 'spacy_text']
-        
+        #doc = self.text_df.loc[self.text_df['text_id'] == text_id, 'spacy_text']
+        doc = self.text_df.loc[self.text_df['text_id'] == text_id]['spacy_text'].values[0]
+
         # create a mapping dataframe between the character index and token index from the spacy text.
         loc2tok_df = pd.DataFrame([(t.idx, t.i) for t in doc], columns = ['loc', 'token'])
     
@@ -405,20 +410,20 @@ class QuotationTool():
                      e.g., ['ORG','PERSON','GPE','NORP','FAC','LOC']
         '''
         # widget for selecting text_id
-        enter_text = widgets.HTML(
-            value='<b>Select which text to preview:</b>',
-            placeholder='',
-            description=''
-            )
+        # enter_text = widgets.HTML(
+        #     value='<b>Select which text to preview:</b>',
+        #     placeholder='',
+        #     description=''
+        #     )
         
-        text_options = self.text_df.text_name.to_list() # get the list of text_id's
-        text = widgets.Combobox(
-            placeholder='Choose text to analyse...',
-            options=text_options,
+        #text_options = self.text_df.text_name.to_list() # get the list of text_id's
+        sel_text = widgets.Combobox(
+            placeholder='Choose text to preview ...',
+            options=self.text_df.text_name.to_list(),
             description='',
             ensure_option=True,
             disabled=False,
-            layout = widgets.Layout(width='180px')
+            layout = widgets.Layout(width='280px')
         )
         
         # widgets to select what to preview, i.e., speaker and/or quote and/or named entities
@@ -429,7 +434,7 @@ class QuotationTool():
             )
         
         speaker_box = widgets.Checkbox(
-            value=False,
+            value=True,
             description='Speaker',
             disabled=False,
             indent=False,
@@ -437,7 +442,7 @@ class QuotationTool():
             )
         
         quote_box = widgets.Checkbox(
-            value=False,
+            value=True,
             description='Quote',
             disabled=False,
             indent=False,
@@ -462,9 +467,9 @@ class QuotationTool():
         def on_preview_button_clicked(_):
             with top_out:
                 # remove bar plot if previewing new text_id
-                if text.value!=self.current_text:
+                if sel_text.value!=self.current_text:
                     clear_output()
-                    self.current_text = text.value
+                    self.current_text = sel_text.value
             
             with save_out:
                 clear_output()
@@ -472,8 +477,9 @@ class QuotationTool():
             with preview_out:                                                                                   
                 # what happens when we click the preview_button
                 clear_output()
-                text_name = text.value
-                text_id = self.quotes_df[self.quotes_df['text_name']==text_name]['text_id'].to_list()[0]
+                text_name = sel_text.value
+                text_id = self.name2id[text_name]
+                #text_id = self.quotes_df[self.quotes_df['text_name']==text_name]['text_id'].to_list()[0]
                 show_what = []
                 if speaker_box.value:
                     show_what.append('SPEAKER')
@@ -506,11 +512,10 @@ class QuotationTool():
                     # create an output folder if not yet available
                     os.makedirs('output', exist_ok=True)
                     out_dir='./output/'
-                    text_name = text.value
-                    text_id = self.quotes_df[self.quotes_df['text_name']==text_name]['text_id'].to_list()[0]
-                    
+                    text_name = sel_text.value
+                    #text_id = self.name2id[text_name]
                     # save the preview as an html file
-                    file = open(out_dir+text_id+'.html', 'w')
+                    file = open(out_dir+text_name+'.html', 'w')
                     file.write(self.html)
                     file.close()
                     clear_output()
@@ -532,8 +537,9 @@ class QuotationTool():
             with top_out:
                 # what happens when we click the top_button
                 clear_output()
-                text_name = text.value
-                text_id = self.quotes_df[self.quotes_df['text_name']==text_name]['text_id'].to_list()[0]
+                text_name = sel_text.value
+                #text_id = self.quotes_df[self.quotes_df['text_name']==text_name]['text_id'].to_list()[0]
+                text_id = self.name2id[text_name]
                 try:
                     self.top_entities(text_id, which_ent='speaker_entities',top_n=5)
                     self.top_entities(text_id, which_ent='quote_entities',top_n=5)
@@ -544,7 +550,7 @@ class QuotationTool():
         top_button.on_click(on_top_button_clicked)
         
         # displaying buttons and their outputs
-        vbox1 = widgets.VBox([enter_text, text, entity_options, speaker_box, quote_box, ne_box,
+        vbox1 = widgets.VBox([sel_text, entity_options, speaker_box, quote_box, ne_box,
                               preview_button, save_button, top_button])
         
         hbox = widgets.HBox([vbox1, top_out])
