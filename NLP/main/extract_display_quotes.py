@@ -86,7 +86,7 @@ class QuotationTool():
         # widget to upload .txt files
         uploader_text = widgets.FileUpload(
             description='Click here to upload .txt files',
-            accept='.txt', # accepted file extension 
+            accept='.txt', # accepted file extension
             multiple=True,  # True to accept multiple files
             layout = widgets.Layout(width='280px')
             )
@@ -457,12 +457,13 @@ class QuotationTool():
         top_ent = dict(most_ent.most_common()[:top_n])
         
         # visualize the top entities
+        text_name = self.quotes_df[self.quotes_df['text_id']==text_id]['text_name'].to_list()[0]
         bar_colors = {'speaker_entities':'#2eb82e',
                       'quote_entities':'#008ae6'}
         plt.figure(figsize=(10, 2.5))
         plt.bar(top_ent.keys(), top_ent.values(), color=bar_colors[which_ent])
         plt.yticks(range(0, most_ent[max(most_ent, key=most_ent.get)]+1, 1))
-        plt.title('Top {} {} in {}'.format(min(top_n,len(top_ent.keys())),which_ent,text_id))
+        plt.title('Top {} {} in {}'.format(min(top_n,len(top_ent.keys())),which_ent,text_name))
         plt.show()
         
 
@@ -580,7 +581,7 @@ class QuotationTool():
                     text_id = self.quotes_df[self.quotes_df['text_name']==text_name]['text_id'].to_list()[0]
                     
                     # save the preview as an html file
-                    file = open(out_dir+text_id+'.html', 'w')
+                    file = open(out_dir+text_name+'.html', 'w')
                     file.write(self.html)
                     file.close()
                     clear_output()
