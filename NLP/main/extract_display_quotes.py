@@ -46,7 +46,7 @@ from nltk.tokenize import sent_tokenize
 # ipywidgets: tools for interactive browser controls in Jupyter notebooks
 import ipywidgets as widgets
 from ipywidgets import Layout
-from IPython.display import display, Markdown, clear_output
+from IPython.display import clear_output #, display, Markdown, 
 
 # import the quote extractor tool
 from quote_extractor import extract_quotes
@@ -88,51 +88,71 @@ class QuotationTool():
             layout = widgets.Layout(width='320px')
             ) 
 
-    
 
-    
     def load_txt(self, value):
-        # Load individual txt file content and return a dict object, wrapped in a list so it can be merged with list of pervious file contents.
+        '''
+        Load individual txt file content and return a dict object, 
+        wrapped in a list so it can be merged with list of pervious file contents.
+        
+        Args:
+            value: the file containing the text data
+        '''
         temp = {'text_name': value['metadata']['name'][:-4],
                 'text': codecs.decode(value['content'], encoding='utf-8')
         }
+        
         return [temp]
 
 
     def load_table(self, value, file_fmt):
-        # Load csv or xlsx file
+        '''
+        Load csv or xlsx file
+        
+        Args:
+            value: the file containing the text data
+            file_fmt: the file format, i.e., 'csv', 'xlsx'
+        '''
+        # read the file based on the file format
         if file_fmt == 'csv':
             temp_df = pd.read_csv(io.BytesIO(value['content']))
         if file_fmt == 'xlsx':
             temp_df = pd.read_excel(io.BytesIO(value['content']))
+            
         # Check if the column text and text_name present in the table, if not, skip the current spreadsheet
         if ('text' not in temp_df.columns) or ('text_name' not in temp_df.columns):
             print('File {} does not contain the required header "text" and "text_name"'.format(value['metadata']['name']))
             return []
         # Return a list of dict objects
         temp = temp_df[['text_name', 'text']].to_dict(orient='index').values()
+        
         return temp
 
 
     def hash_gen(self, temp_df):
-        # Create column text_id by md5 hash of the text in text_df
+        '''
+        Create column text_id by md5 hash of the text in text_df
+        
+        Args:
+            temp_df: the temporary pandas dataframe containing the text data
+        '''
         temp_df['text_id'] = temp_df['text'].apply(lambda t: hashlib.md5(t.encode('utf-8')).hexdigest())
+        
         return temp_df
 
 
     def nlp_preprocess(self, temp_df):
         '''
-        Pre-process and create spaCy text
+        Pre-process text and fit it with Spacy language model into the column "spacy_text"
 
         Args:
-            text: the text to be processed
+            temp_df: the temporary pandas dataframe containing the text data
         '''
-        # pre-process text and fit it with Spacy language model into the column "spacy_text"
         temp_df['spacy_text'] = temp_df['text']\
             .map(sent_tokenize)\
                 .apply(lambda t: ' '.join(t))\
                     .map(utils.preprocess_text)\
                         .map(self.nlp)
+                        
         return temp_df
 
 
@@ -158,7 +178,8 @@ class QuotationTool():
         uploaded_df = self.hash_gen(uploaded_df)
         uploaded_df = self.nlp_preprocess(uploaded_df)
         self.text_df = pd.concat([self.text_df, uploaded_df])
-        # Deduplicate the text_df by text_id
+        
+        # deduplicate the text_df by text_id
         if deduplication:
             self.text_df.drop_duplicates(subset='text_id', keep='first', inplace=True)
     
@@ -387,12 +408,13 @@ class QuotationTool():
         top_ent = dict(most_ent.most_common()[:top_n])
         
         # visualize the top entities
+        text_name = self.quotes_df[self.quotes_df['text_id']==text_id]['text_name'].to_list()[0]
         bar_colors = {'speaker_entities':'#2eb82e',
                       'quote_entities':'#008ae6'}
         plt.figure(figsize=(10, 2.5))
         plt.bar(top_ent.keys(), top_ent.values(), color=bar_colors[which_ent])
         plt.yticks(range(0, most_ent[max(most_ent, key=most_ent.get)]+1, 1))
-        plt.title('Top {} {} in {}'.format(min(top_n,len(top_ent.keys())),which_ent,text_id))
+        plt.title('Top {} {} in {}'.format(min(top_n,len(top_ent.keys())),which_ent,text_name))
         plt.show()
         
 
@@ -510,7 +532,7 @@ class QuotationTool():
                     text_id = self.quotes_df[self.quotes_df['text_name']==text_name]['text_id'].to_list()[0]
                     
                     # save the preview as an html file
-                    file = open(out_dir+text_id+'.html', 'w')
+                    file = open(out_dir+str(text_id)+'.html', 'w')
                     file.write(self.html)
                     file.close()
                     clear_output()
