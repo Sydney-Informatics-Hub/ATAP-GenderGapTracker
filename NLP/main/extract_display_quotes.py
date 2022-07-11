@@ -225,7 +225,7 @@ class QuotationTool():
         
         # go through all the texts and start extracting quotes
         for row in self.text_df.itertuples():
-            text_id = row.Index
+            text_id = row.text_id
             text_name = row.text_name
             doc = row.spacy_text
             
