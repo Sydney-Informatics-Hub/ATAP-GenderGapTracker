@@ -46,7 +46,7 @@ from nltk.tokenize import sent_tokenize
 # ipywidgets: tools for interactive browser controls in Jupyter notebooks
 import ipywidgets as widgets
 from ipywidgets import Layout
-from IPython.display import clear_output #, display, Markdown, 
+from IPython.display import display, Markdown, clear_output
 
 # import the quote extractor tool
 from quote_extractor import extract_quotes
@@ -434,7 +434,7 @@ class QuotationTool():
             description=''
             )
         
-        text_options = self.text_df.text_name.to_list() # get the list of text_id's
+        text_options = self.text_df.text_name.to_list() # get the list of text_names
         text = widgets.Combobox(
             placeholder='Choose text to analyse...',
             options=text_options,
