@@ -337,12 +337,12 @@ class QuotationTool():
         colors = {'QUOTE': '#66ccff', 'SPEAKER': '#66ff99'}
         options = {'ents': ['QUOTE', 'SPEAKER'], 
                    'colors': colors, 
-                   'top_offset': 42,
+                   'top_offset': 50,
                    'template': {'span':TPL_SPAN,
                                'slice':TPL_SPAN_SLICE,
                                'start':TPL_SPAN_START},
-                   'span_label_offset': 14,
-                   'top_offset_step':14}
+                   'span_label_offset': 18,
+                   'top_offset_step':18}
         
         # get the spaCy text 
         doc = self.text_df.loc[text_id, 'spacy_text']
@@ -441,7 +441,7 @@ class QuotationTool():
             description='',
             ensure_option=True,
             disabled=False,
-            layout = widgets.Layout(width='190px')
+            layout = widgets.Layout(width='195px')
         )
         
         # widgets to select what to preview, i.e., speaker and/or quote and/or named entities
@@ -533,7 +533,7 @@ class QuotationTool():
                     text_id = self.quotes_df[self.quotes_df['text_name']==text_name]['text_id'].to_list()[0]
                     
                     # save the preview as an html file
-                    file = open(out_dir+str(text_id)+'.html', 'w')
+                    file = open(out_dir+str(text_name)+'.html', 'w')
                     file.write(self.html)
                     file.close()
                     clear_output()
