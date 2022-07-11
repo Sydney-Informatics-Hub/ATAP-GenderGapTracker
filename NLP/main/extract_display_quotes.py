@@ -90,9 +90,7 @@ class QuotationTool():
         
         # give notification when file is uploaded
         def _cb(change):
-            #clear_output()
-            #print('File uploaded!')
-            self.process_upload(deduplication=True)
+            clear_output()
             try:
                 self.process_upload(deduplication=True)
                 print('Currently {} text documents are loaded for analysis'.format(self.text_df.shape[0]))
