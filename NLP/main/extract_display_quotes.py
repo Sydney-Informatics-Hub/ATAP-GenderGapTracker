@@ -15,7 +15,6 @@ The Gender Gap Tracker: Using Natural Language Processing to measure gender bias
 '''
 
 # import required packages
-from distutils.command.upload import upload
 import os
 import io
 import sys
@@ -24,7 +23,6 @@ import logging
 import traceback
 from collections import Counter
 from datetime import datetime
-#from uuid import uuid4
 import hashlib
 
 # matplotlib: visualization tool
@@ -32,7 +30,6 @@ from matplotlib import pyplot as plt
 
 # pandas: tools for data processing
 import pandas as pd
-#from NLP.main.utils import preprocess_text
 
 # spaCy and NLTK: natural language processing tools for working with language/text data
 import spacy
@@ -350,12 +347,12 @@ class QuotationTool():
         colors = {'QUOTE': '#66ccff', 'SPEAKER': '#66ff99'}
         options = {'ents': ['QUOTE', 'SPEAKER'], 
                    'colors': colors, 
-                   'top_offset': 50,
+                   'top_offset': 42,
                    'template': {'span':TPL_SPAN,
                                'slice':TPL_SPAN_SLICE,
                                'start':TPL_SPAN_START},
-                   'span_label_offset': 18,
-                   'top_offset_step':18}
+                   'span_label_offset': 14,
+                   'top_offset_step':14}
         
         # get the spaCy text 
         doc = self.text_df[self.text_df['text_id']==text_id]['spacy_text'].to_list()[0]
