@@ -86,7 +86,20 @@ class QuotationTool():
             accept='.txt, .xlsx, .csv ', # accepted file extension 
             multiple=True,  # True to accept multiple files
             layout = widgets.Layout(width='320px')
-            ) 
+            )
+        
+        # give notification when file is uploaded
+        def _cb(change):
+            #clear_output()
+            #print('File uploaded!')
+            self.process_upload(deduplication=True)
+            try:
+                self.process_upload(deduplication=True)
+                print('Currently {} text documents are loaded for analysis'.format(self.text_df.shape[0]))
+            except:
+                print('Please upload your text file in the above cell!')
+            
+        self.file_uploader.observe(_cb, names='data')
 
 
     def load_txt(self, value):
@@ -174,6 +187,7 @@ class QuotationTool():
                 text_dic = self.load_table(self.file_uploader.value[file], \
                     file_fmt=file.lower().split('.')[-1])
             all_data.extend(text_dic)
+        
         uploaded_df = pd.DataFrame.from_dict(all_data)
 
         uploaded_df = self.hash_gen(uploaded_df)
@@ -345,7 +359,7 @@ class QuotationTool():
                    'top_offset_step':18}
         
         # get the spaCy text 
-        doc = self.text_df.loc[text_id, 'spacy_text']
+        doc = self.text_df[self.text_df['text_id']==text_id]['spacy_text'].to_list()[0]
         
         # create a mapping dataframe between the character index and token index from the spacy text.
         loc2tok_df = pd.DataFrame([(t.idx, t.i) for t in doc], columns = ['loc', 'token'])
