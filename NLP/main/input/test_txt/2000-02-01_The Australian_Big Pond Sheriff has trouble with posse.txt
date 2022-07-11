@@ -1,0 +1,16 @@
+BRISBANE's Internet users are showing little interest in having their Net content filtered.
+ Big Pond began canvassing its Brisbane subscribers late last year to take part in a free two-month trial using a locally developed
+filtering technology called Internet Sheriff.
+ The trial, which ends on February 29, was only available to people dialling in on Big Pond's Brisbane Premium access numbers.
+But last week, with the trial well into its first month, Big Pond was still looking for participants.
+ The ISP wanted 2000 users to test the system, but a Big Pond spokeswoman said she could not say how many had signed up.
+ Part of the idea of trials such as these were to gauge demand, she said, and it was not unusual that this trial had not attracted as many participants as required.
+ To take part, people have to register with Big Pond. Their Internet connection automatically will be "screened" for pornographic or violent content. No special hardware or software is required and the service can be disabled at any time.
+ Internet Sheriff is a filtering technology developed by Brisbane-based Tel.net Media. It uses a dynamic real-time Internet content classification technology that identifies Web sites that fit certain criteria and is backed up by a blacklist of sites categorised as offensive.
+ When filtering has been enabled, the user is denied access to those sites. If they go to a new, uncategorised Web site, key statistical data (such as particular words or graphics) is gathered and compared with pre-set models.
+ If there is a sufficient match, the Web site is classified and blocked until it undergoes human review and unblocked.
+ The Big Pond trial targets sites classified as pornographic or relating to anarchy and violence, but the technology can be used to create customised categories.
+ The software runs on the ISP's server and does not require any installation by the user.
+www.telnetmedia.com/sheriff/ 
+www.bigpond.com 
+ Load-Date: March 1, 2002

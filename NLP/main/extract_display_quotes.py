@@ -23,7 +23,7 @@ import logging
 import traceback
 from collections import Counter
 from datetime import datetime
-from uuid import uuid4
+import hashlib
 
 # matplotlib: visualization tool
 from matplotlib import pyplot as plt
@@ -77,78 +77,95 @@ class QuotationTool():
         # initiate other required variables
         self.html = None
         self.current_text = None
-        
-    
-    def upload_files(self):
-        '''
-        Upload text or excel files as input to the QuotationTool
-        '''
-        # widget to upload .txt files
-        uploader_text = widgets.FileUpload(
-            description='Click here to upload .txt files',
-            accept='.txt', # accepted file extension 
+
+        self.file_uploader = widgets.FileUpload(
+            description='Upload your files (txt, csv or xlsx)',
+            accept='.txt, .xlsx, .csv ', # accepted file extension 
             multiple=True,  # True to accept multiple files
-            layout = widgets.Layout(width='280px')
-            )
-        
-        # widget to upload .xlsx file
-        uploader_xls = widgets.FileUpload(
-            description='Click here to upload .xlsx, .xls, or .csv file', 
-            accept='.xlsx, .xls, .csv', # accepted file extension
-            multiple=False,  # to accept one Excel file only
             layout = widgets.Layout(width='320px')
             )
-        
-        # tab widget to select which file types to upload
-        children = [uploader_text, uploader_xls]
-        tab = widgets.Tab(layout = widgets.Layout(width='450px'))
-        tab.children = children
-        tab.set_title(0, 'Upload text files')
-        tab.set_title(1, 'Upload excel file')
-        
         
         # give notification when file is uploaded
         def _cb(change):
             clear_output()
-            uploaded_success = widgets.HTML(
-            value='<b>File uploaded!</b>',
-            placeholder='',
-            description='',
-            layout=Layout(margin='0px 0px 0px 0px')
-            )
-            display(uploaded_success)
+            try:
+                self.process_upload(deduplication=True)
+                print('Currently {} text documents are loaded for analysis'.format(self.text_df.shape[0]))
+            except:
+                print('Please upload your text file in the above cell!')
             
-            # process the uploaded file
-            if tab.children[0].value!={}:
-                self.process_txt(tab.children[0])
-            else:
-                self.process_xls(tab.children[1])
-            
-        uploader_text.observe(_cb, names='data')
-        uploader_xls.observe(_cb, names='data')
-        
-        return tab
-    
-    
-    def nlp_preprocess(self, text):
+        self.file_uploader.observe(_cb, names='data')
+
+
+    def load_txt(self, value):
         '''
-        Pre-process and create spaCy text
+        Load individual txt file content and return a dict object, 
+        wrapped in a list so it can be merged with list of pervious file contents.
+        
+        Args:
+            value: the file containing the text data
+        '''
+        temp = {'text_name': value['metadata']['name'][:-4],
+                'text': codecs.decode(value['content'], encoding='utf-8')
+        }
+        
+        return [temp]
+
+
+    def load_table(self, value, file_fmt):
+        '''
+        Load csv or xlsx file
+        
+        Args:
+            value: the file containing the text data
+            file_fmt: the file format, i.e., 'csv', 'xlsx'
+        '''
+        # read the file based on the file format
+        if file_fmt == 'csv':
+            temp_df = pd.read_csv(io.BytesIO(value['content']))
+        if file_fmt == 'xlsx':
+            temp_df = pd.read_excel(io.BytesIO(value['content']))
+            
+        # Check if the column text and text_name present in the table, if not, skip the current spreadsheet
+        if ('text' not in temp_df.columns) or ('text_name' not in temp_df.columns):
+            print('File {} does not contain the required header "text" and "text_name"'.format(value['metadata']['name']))
+            return []
+        
+        # Return a list of dict objects
+        temp = temp_df[['text_name', 'text']].to_dict(orient='index').values()
+        
+        return temp
+
+
+    def hash_gen(self, temp_df):
+        '''
+        Create column text_id by md5 hash of the text in text_df
+        
+        Args:
+            temp_df: the temporary pandas dataframe containing the text data
+        '''
+        temp_df['text_id'] = temp_df['text'].apply(lambda t: hashlib.md5(t.encode('utf-8')).hexdigest())
+        
+        return temp_df
+
+
+    def nlp_preprocess(self, temp_df):
+        '''
+        Pre-process text and fit it with Spacy language model into the column "spacy_text"
 
         Args:
-            text: the text to be processed
+            temp_df: the temporary pandas dataframe containing the text data
         '''
-        # pre-process text
-        text = sent_tokenize(text)
-        text = ' '.join(text)
-        text = utils.preprocess_text(text)
-        
-        # apply the spaCy's tool to the text
-        doc = self.nlp(text)
-        
-        return doc
-    
-    
-    def process_txt(self, txt_upload):    
+        temp_df['spacy_text'] = temp_df['text']\
+            .map(sent_tokenize)\
+                .apply(lambda t: ' '.join(t))\
+                    .map(utils.preprocess_text)\
+                        .map(self.nlp)
+                        
+        return temp_df
+
+
+    def process_upload(self, deduplication=True):    
         '''
         Pre-process uploaded .txt files into pandas dataframe
 
@@ -156,85 +173,26 @@ class QuotationTool():
             txt_upload: the uploaded .txt files from upload_files()
         '''
         # create an empty list for a placeholder to store all the texts
-        all_files = []
-        text_names = []
-        text_ids = []
+        all_data = []
         
-        # search for text files (.txt) inside the folder and extract all the texts
-        for input_file in txt_upload.value.keys():
-            text_dict = {}; n=0
-            
-            # generate dated unique identifier for text_id
-            text_id = datetime.now().strftime('%Y-%m-%d-') + str(uuid4())[:10]
-            while text_id in text_ids:
-                text_id = datetime.now().strftime('%Y-%m-%d-') + str(uuid4())[:10]
+        for file in self.file_uploader.value.keys():
+            if file.lower().endswith('txt'):
+                text_dic = self.load_txt(self.file_uploader.value[file])
             else:
-                text_ids.append(text_id)
-            
-            # retain the first ten characters of the text file name as identifier
-            text_name = input_file[:-4].lower()[:20]
-            if text_name in text_names:
-                while '{}-{}'.format(text_name,n) in text_names:
-                    n+=1
-                else:
-                    text_name = '{}-{}'.format(text_name,n)
-                    text_names.append(text_name)
-            else:
-                text_names.append(text_name)
+                text_dic = self.load_table(self.file_uploader.value[file], \
+                    file_fmt=file.lower().split('.')[-1])
+            all_data.extend(text_dic)
+        
+        uploaded_df = pd.DataFrame.from_dict(all_data)
 
-            try:
-                # read the text file
-                doc_lines = codecs.decode(txt_upload.value[input_file]['content'], encoding='utf-8')
-                
-                # store them inside a dictionary
-                text_dict['text_id'] = text_id
-                text_dict['text_name'] = text_name
-                text_dict['text'] = doc_lines
-                all_files.append(text_dict)
-                    
-            except:
-                # this will provide some information in the case of an error
-                app_logger.exception("message")
-                traceback.print_exc()
+        uploaded_df = self.hash_gen(uploaded_df)
+        uploaded_df = self.nlp_preprocess(uploaded_df)
+        self.text_df = pd.concat([self.text_df, uploaded_df])
+        self.text_df.reset_index(drop=True, inplace=True)
         
-        # convert the extracted texts into a pandas dataframe for further processing
-        self.text_df = pd.DataFrame.from_dict(all_files)
-        self.text_df['spacy_text'] = self.text_df['text'].apply(lambda text: self.nlp_preprocess(text))
-        self.text_df.set_index('text_id', inplace=True)
-        
-        return self.text_df
-    
-    
-    def process_xls(self, xls_upload):
-        '''
-        Pre-process uploaded .xlsx file into pandas dataframe
-
-        Args:
-            xls_upload: the uploaded .xlsx file from upload_files()
-        '''
-        text_ids = []
-        
-        # read the excel file containing the list of texts and convert them into a pandas dataframe
-        try:
-            self.text_df = pd.read_excel(io.BytesIO(xls_upload.data[0]))
-        except:
-            self.text_df = pd.read_csv(io.BytesIO(xls_upload.data[0]))
-        
-        # generate dated unique identifier for text_id
-        for row in self.text_df.itertuples():
-            
-            text_id = datetime.now().strftime('%Y-%m-%d-') + str(uuid4())[:10]
-            while text_id in text_ids:
-                text_id = datetime.now().strftime('%Y-%m-%d-') + str(uuid4())[:10]
-            else:
-                text_ids.append(text_id)
-        self.text_df['text_id'] = text_ids
-        self.text_df.set_index('text_id', inplace=True)
-        
-        # process text using spaCy
-        self.text_df['spacy_text'] = self.text_df['text'].apply(lambda text: self.nlp_preprocess(text))
-        
-        return self.text_df
+        # deduplicate the text_df by text_id
+        if deduplication:
+            self.text_df.drop_duplicates(subset='text_id', keep='first', inplace=True)
     
     
     def extract_inc_ent(self, list_of_string, spacy_doc, inc_ent):
@@ -247,7 +205,11 @@ class QuotationTool():
             inc_ent: a list containing the named entities to be extracted from the text, 
                      e.g., ['ORG','PERSON','GPE','NORP','FAC','LOC']
         '''       
-        return [[(str(ent), ent.label_) for ent in spacy_doc.ents if (str(ent) in string) & (ent.label_ in inc_ent)] for string in list_of_string]
+        return [
+            [(str(ent), ent.label_) for ent in spacy_doc.ents \
+                if (str(ent) in string) & (ent.label_ in inc_ent)]\
+                    for string in list_of_string
+                    ]
         
 
     def get_quotes(self, inc_ent, create_tree=False):
@@ -273,7 +235,7 @@ class QuotationTool():
         
         # go through all the texts and start extracting quotes
         for row in self.text_df.itertuples():
-            text_id = row.Index
+            text_id = row.text_id
             text_name = row.text_name
             doc = row.spacy_text
             
@@ -393,7 +355,7 @@ class QuotationTool():
                    'top_offset_step':14}
         
         # get the spaCy text 
-        doc = self.text_df.loc[text_id, 'spacy_text']
+        doc = self.text_df[self.text_df['text_id']==text_id]['spacy_text'].to_list()[0]
         
         # create a mapping dataframe between the character index and token index from the spacy text.
         loc2tok_df = pd.DataFrame([(t.idx, t.i) for t in doc], columns = ['loc', 'token'])
@@ -457,12 +419,13 @@ class QuotationTool():
         top_ent = dict(most_ent.most_common()[:top_n])
         
         # visualize the top entities
+        text_name = self.quotes_df[self.quotes_df['text_id']==text_id]['text_name'].to_list()[0]
         bar_colors = {'speaker_entities':'#2eb82e',
                       'quote_entities':'#008ae6'}
         plt.figure(figsize=(10, 2.5))
         plt.bar(top_ent.keys(), top_ent.values(), color=bar_colors[which_ent])
         plt.yticks(range(0, most_ent[max(most_ent, key=most_ent.get)]+1, 1))
-        plt.title('Top {} {} in {}'.format(min(top_n,len(top_ent.keys())),which_ent,text_id))
+        plt.title('Top {} {} in {}'.format(min(top_n,len(top_ent.keys())),which_ent,text_name))
         plt.show()
         
 
@@ -481,14 +444,14 @@ class QuotationTool():
             description=''
             )
         
-        text_options = self.text_df.text_name.to_list() # get the list of text_id's
+        text_options = self.text_df.text_name.to_list() # get the list of text_names
         text = widgets.Combobox(
             placeholder='Choose text to analyse...',
             options=text_options,
             description='',
             ensure_option=True,
             disabled=False,
-            layout = widgets.Layout(width='180px')
+            layout = widgets.Layout(width='195px')
         )
         
         # widgets to select what to preview, i.e., speaker and/or quote and/or named entities
@@ -580,7 +543,7 @@ class QuotationTool():
                     text_id = self.quotes_df[self.quotes_df['text_name']==text_name]['text_id'].to_list()[0]
                     
                     # save the preview as an html file
-                    file = open(out_dir+text_id+'.html', 'w')
+                    file = open(out_dir+str(text_name)+'.html', 'w')
                     file.write(self.html)
                     file.close()
                     clear_output()

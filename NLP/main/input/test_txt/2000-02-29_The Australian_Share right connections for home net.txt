@@ -1,0 +1,27 @@
+iShare 3.5
+Artisoft; $210 for 2 user;
+$299 for 5 user (with network cards and cables)
+Microsoft Windows 98 SE
+THIS is a story of a multi-computer home. It's the one more and more people are moving to -- a network with mum, dad and the kids all needing computer access, and Internet access.
+ For many households, the roadblock to the so-called superhighway is their telephone line. So what do you do if everyone wants to use the phone line at once? Share.
+Windows 98 SE includes Internet Connection, which enables you to connect your modem to one machine, and access it from your other (networked) PCs.
+ Microsoft shipped it to me in a flash and I installed it, tested it with Win 98 on the server (machine with modem) and Win 95 on the client (machine without modem).
+ The server installation was straightforward enough, as it was part of the Win 98 install, and creating an installation disk for my client machines was reasonably easy too.
+ But after that things became more difficult. The only instructions assumed that the PCs were not already networked. I eventually gave up trying to work out what steps were required for an existing network and rang Microsoft technical support. Thirty minutes later, I could browse the Internet and download files from either machine. Neat.
+ Except that I run a rather large Web site and I was in the middle of a big rebuild, and about to do a comparison of FTP software (used to transfer files to and from Web sites).
+ Then I discovered that I could no longer rely on any of the FTP programs I had in my test suite to copy files.
+ After a 45 minute wait on the support line, and needing 12 separate connections to copy about 50 files, the love affair was over.
+ Two more support calls and I didn't even get through the queue.
+ Three months later, after initially refusing to believe that I really had a problem, a Microsoft representative finally found a reference in their database which, he told me, reported that Microsoft Windows 98 SE's Internet Connection had problems with graphical user interface (GUI) FTP programs. He recommended that I use a DOS program instead.
+ When I asked if I could quote him on this, the person became, er, uncomfortable.
+ Reinstating winsock immediately got all the FTP programs working again, but they couldn't tell me the solution.
+ Alternatively, I installed iShare from Artisoft (the people who brought us LANtastic). So did a fellow reviewer. On his machine it started up like a charm, ran like a dream, and is a joy to have on disk.
+ The technical support person at Uplink in Australia and I spent three hours reversing all the remnants of the Internet Connection changes to my configuration.
+ A 10 minute install and there it was, modem sharing across PCs, with my GUI FTP programs racing along nicely.
+ The latest rebuild of iShare 3.5 supports Windows 2000, for all those of you about to take the plunge. It is robust and fast to install on a healthy system. By default it caches at the server, so if you are using the server and other (client) users are thrashing your disk, you may want to disable that.
+ The only trap for new players is that iShare can disconnect the Internet when the client logs out, while the server is still using the connection. To ensure that iShare knows the server is using the connection, you should connect to the Web using iShare at the server as well as from the clients.
+ All things considered, changing which icon I use to connect to the Web is a small price to pay to be able to share Internet access with others on my network, or to simply run downloads on other machines while I do my work on the server machine.
+ So, it is possible to share a modem connection, it does impact on your response times because there is more data travelling on the line, but it can solve household disputes over whose turn it is to connect up.
+www.artisoft.com 
+www.microsoft.com.au 
+ Load-Date: March 1, 2002

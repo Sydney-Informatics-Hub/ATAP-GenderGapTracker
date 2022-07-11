@@ -1,0 +1,24 @@
+ACCESSING the Internet is likely to become easier for people with disabilities following a decision by the Web's governing body to approve new guidelines for accessibility.
+ The World Wide Web Consortium (W3C), the organisation responsible for developing online standards, last week approved the Authoring Tools Accessibility Guidelines (ATAG), version one.
+ The decision follows an earlier move by the W3C to introduce guidelines for people developing sites. These rules are designed to make sites accessible to people with sight disabilities.
+Design flaws and the extensive use of tables, Java and animations can make it hard for blind people, who often use text-to-speech and braille devices to navigate the Web.
+ Australia's Human Rights and Equal Opportunities Commission (HREOC) in March will deliver its report on overcoming barriers to disabled people accessing technology.
+ The report covers the Web, as well as other online services, telephone IVR systems and ATMs.
+ HREOC disability policy director David Moore said the W3C rules would make it simpler for Web designers to include components such as explanatory HTML tags and cascading style sheets.
+ Such components made the use of text-to-speech devices easier, he said.
+ "But that's not an excuse for not complying right away," he said.
+ Mr Moore said HREOC was concentrating on compliance in government and major corporate Web sites.
+ Financial institutions had been particularly co-operative, with most banking sites now working towards compliance with the W3C guidelines, he said.
+ "With banking it's particularly important, because there are economic imperatives for customers going online," he said. "People who have difficulties can do a lot online."
+ Ultimately, HREOC's big stick -- the Disability Discrimination Act (DDA) -- may have to be wielded, Mr Moore said.
+ "If you're in the business of providing services, you have to make them available to people with a disability," he said.
+ But while the DDA provides such powers, lobbyists said voluntary co-operation should be encouraged.
+ Royal Blind Society disability technology specialist Tim Noonan said corporates updating their Web sites to accommodate sight-impaired people would benefit by accessing a broader customer base.
+ Those preparing simplified versions of their content also would be better equipped to tackle Wireless Applications Protocol (WAP) technology and the emerging Internet appliances market, he said.
+ Accommodating people with disabilities would make sites more accessible to able-bodied people as well, he said.
+ "A lot of people are very verbal, and people are going to want to listen to Web sites as well as look at them," he said.
+ Mr Noonan said the W3C guidelines would make compliance easier, as many of the mundane tasks involved in increasing accessibility would be handled automatically by the development tools.
+ "These tools should do things automatically to make the site more accessible, so the designers don't have to do all the work," he said.
+www.w3c.org 
+www.hreoc.gov.au 
+ Load-Date: March 1, 2002
