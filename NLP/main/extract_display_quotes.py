@@ -193,6 +193,7 @@ class QuotationTool():
         uploaded_df = self.hash_gen(uploaded_df)
         uploaded_df = self.nlp_preprocess(uploaded_df)
         self.text_df = pd.concat([self.text_df, uploaded_df])
+        self.text_df.reset_index(drop=True, inplace=True)
         
         # deduplicate the text_df by text_id
         if deduplication:
