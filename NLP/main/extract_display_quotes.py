@@ -122,6 +122,7 @@ class QuotationTool():
         if ('text' not in temp_df.columns) or ('text_name' not in temp_df.columns):
             print('File {} does not contain the required header "text" and "text_name"'.format(value['metadata']['name']))
             return []
+        
         # Return a list of dict objects
         temp = temp_df[['text_name', 'text']].to_dict(orient='index').values()
         
@@ -440,7 +441,7 @@ class QuotationTool():
             description='',
             ensure_option=True,
             disabled=False,
-            layout = widgets.Layout(width='180px')
+            layout = widgets.Layout(width='190px')
         )
         
         # widgets to select what to preview, i.e., speaker and/or quote and/or named entities
