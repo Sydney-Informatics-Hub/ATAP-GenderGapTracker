@@ -1,4 +1,4 @@
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Sydney-Informatics-Hub/ATAP-GenderGapTracker/speaker_ner?labpath=%2FNLP%2Fmain%2Fquote_extractor_notebook.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Sydney-Informatics-Hub/ATAP-GenderGapTracker/master?labpath=%2FNLP%2Fmain%2Fquote_extractor_notebook.ipynb)
 
 # Run NLP Pipeline
 
